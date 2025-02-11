@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: lettuce
+
+  config:
+    import:
+      - optional:file:.env[.properties]
+      - optional:classpath:application-mysql.yml
+      - optional:classpath:application-redis.yml
+
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY}
+
+  jwt:
+    secret: ${JWT_SECRET}
+    access-token-expire-time: 6h
+    refresh-token-expire-time: 1d
+
+  mail:
+    host: ${EMAIL_HOST}
+    port: ${EMAIL_PORT}
+    username: ${EMAIL_USERNAME}
+    password: ${EMAIL_PASSWORD}
+
+app:
+  base-url: ${BASE_URL}

@@ -1,0 +1,40 @@
+version: "3.8"
+
+services:
+  mysql:
+    image: "mysql:8.0"
+    container_name: lettuce-mysql
+    restart: always
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: lettuce
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - main-network
+    
+  redis:
+    image: redis:latest
+    container_name: lettuce-redis
+    ports:
+      - 6379:6379
+    volumes:
+      - redis-data:/data    
+    networks:
+      - main-network
+    # command: redis-server --save 60 1 --loglevel warning
+    # healthcheck:
+    #   test: ["CMD", "redis-cli", "ping"]
+    #   interval: 10s
+    #   timeout: 5s
+
+networks:
+  main-network:
+    driver: bridge
+
+volumes:
+  mysql-data:
+  redis-data:
