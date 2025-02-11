@@ -22,6 +22,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         User user = userRepository.findByEmailAndDeletedAtIsNullWithProfiles(email);
 
+        if (user == null) {
+            throw new AuthenticationException(ErrorCode.NOT_FOUND_USER);
+        }
+
         UserDetailsImpl userDetails = new UserDetailsImpl(user);
 
         validateUser(userDetails);

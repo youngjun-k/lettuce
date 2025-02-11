@@ -49,10 +49,6 @@ public class EmailService {
     }
 
     private void sendEmail(String email, String subject, String template, String token) {
-        // http://localhost:8080/api/auth/verify-email?token=$%7Btoken%7D
-        // it should be
-        // http://localhost:8080/api/auth/verify-email?token=token
-
         Map<String, String> values = Map.of(
                 "baseUrl", appConfig.getBaseUrl(),
                 "encodedToken", token);

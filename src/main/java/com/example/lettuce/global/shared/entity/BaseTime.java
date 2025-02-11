@@ -6,17 +6,12 @@ import jakarta.persistence.MappedSuperclass;
 
 import java.time.LocalDateTime;
 
-import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
-public class BaseTime {
-    @CreatedDate
-    @Column(name = "created_at", nullable = false, columnDefinition = "datetime comment '생성일'")
-    private LocalDateTime createdAt;
-
+public abstract class BaseTime extends BaseCreatedTimeEntity {
     @LastModifiedDate
     @Column(name = "updated_at", nullable = false, columnDefinition = "datetime comment '수정일'")
     private LocalDateTime updatedAt;

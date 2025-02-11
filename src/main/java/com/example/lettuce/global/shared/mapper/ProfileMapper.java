@@ -6,5 +6,4 @@ import com.example.lettuce.domain.user.entity.User;
 
 public interface ProfileMapper<T extends CreateUserRequest, P extends Profile> {
     P toProfile(T request, User user);
-
 }
