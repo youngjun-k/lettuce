@@ -22,10 +22,10 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
-@Table(name = "carbon_footprints", indexes = {
+@Table(name = "carbon_footprint_rewards", indexes = {
         @Index(name = "idx_carbon_footprints_user_id", columnList = "user_id")
 })
-public class CarbonFootPrint extends BaseCreatedTimeEntity {
+public class CarbonFootPrintReward extends BaseCreatedTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

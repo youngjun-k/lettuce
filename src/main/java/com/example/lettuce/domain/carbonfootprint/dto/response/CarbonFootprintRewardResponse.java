@@ -2,7 +2,7 @@ package com.example.lettuce.domain.carbonfootprint.dto.response;
 
 import java.time.LocalDateTime;
 
-public record CarbonFootprintResponse(
+public record CarbonFootprintRewardResponse(
                 String itemCategory,
                 String itemName,
                 String description,

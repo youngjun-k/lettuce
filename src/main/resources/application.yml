@@ -21,14 +21,11 @@ spring:
     access-token-expire-time: 6h
     refresh-token-expire-time: 1d
 
-  mail:
+  mail:    
     host: ${EMAIL_HOST}
     port: ${EMAIL_PORT}
     username: ${EMAIL_USERNAME}
     password: ${EMAIL_PASSWORD}
-
-app:
-  base-url: ${BASE_URL}
 
 cloud:
   aws:
@@ -39,3 +36,10 @@ cloud:
       static: ${AWS_REGION}
     s3:
       bucket: ${S3_BUCKET_NAME}
+
+lettuce:
+  base-url: ${BASE_URL}
+  crawler:
+    coupang:
+      base-url: ${COUPANG_BASE_URL}
+      list-url: ${COUPANG_LIST_URL}

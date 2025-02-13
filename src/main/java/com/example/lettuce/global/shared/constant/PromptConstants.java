@@ -4,7 +4,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class PromptConstants {
+public class PromptConstants {    
 
     public static final String CARBON_FOOTPRINT_PROMPT = """
                 Please analyze the following image and extract the relevant details:
@@ -27,5 +27,15 @@ public class PromptConstants {
                 }
 
                 If any information cannot be identified or extracted from the image, please leave that field empty or indicate that it's 'Unable to determine'.
+            """;
+
+    public static final String CARBON_FOOTPRINT_BY_TEXT_PROMPT = """
+                    Please analyze the following product name and return the approximate amount of carbon footprint of the product:
+
+                    Product Name: {productName}
+
+                    Respond in String format.
+                    Example:
+                    "20kg CO₂"
             """;
 }

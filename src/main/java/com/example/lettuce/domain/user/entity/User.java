@@ -1,10 +1,7 @@
 package com.example.lettuce.domain.user.entity;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
 
-import com.example.lettuce.domain.carbonfootprint.entity.CarbonFootPrint;
 import com.example.lettuce.domain.user.enums.UserRole;
 import com.example.lettuce.global.shared.entity.BaseTime;
 import com.fasterxml.jackson.annotation.JsonIgnore;

@@ -18,7 +18,6 @@ public class CachingConfig {
          * Consider using Caffeine cache instead of ConcurrentMapCache for better
          * control:
          * 
-         * TTL for "login_attempts" cache to automatically clear old entries
          * Maximum size limits to prevent memory issues
          * Eviction policies for user-related caches
          */
@@ -27,7 +26,9 @@ public class CachingConfig {
         cacheManager.setCaches(
                 List.of(
                         new ConcurrentMapCache("user_id"),
-                        new ConcurrentMapCache("user_email")));
+                        new ConcurrentMapCache("user_email"),
+                        new ConcurrentMapCache("carbon_footprint_product_by_product_id"),
+                        new ConcurrentMapCache("carbon_footprint_product_by_product_name")));
         return cacheManager;
     }
 }
