@@ -1,12 +1,14 @@
 spring:
   application:
     name: lettuce
+    client-base-url: ${CLIENT_BASE_URL}
 
   config:
     import:
       - optional:file:.env[.properties]
       - optional:classpath:application-mysql.yml
       - optional:classpath:application-redis.yml
+      - optional:classpath:application-cloud.yml
 
   servlet:
     multipart:
@@ -21,25 +23,14 @@ spring:
     access-token-expire-time: 6h
     refresh-token-expire-time: 1d
 
-  mail:    
+  mail:
     host: ${EMAIL_HOST}
     port: ${EMAIL_PORT}
     username: ${EMAIL_USERNAME}
     password: ${EMAIL_PASSWORD}
 
-cloud:
-  aws:
-    credentials:
-      access-key: ${AWS_ACCESS_KEY}
-      secret-key: ${AWS_SECRET_KEY}
-    region:
-      static: ${AWS_REGION}
-    s3:
-      bucket: ${S3_BUCKET_NAME}
-
-lettuce:
-  base-url: ${BASE_URL}
   crawler:
     coupang:
       base-url: ${COUPANG_BASE_URL}
+      base-product-url: ${COUPANG_PRODUCT_URL}
       list-url: ${COUPANG_LIST_URL}

@@ -22,7 +22,7 @@ public class PromptConstants {
                     "itemCategory": "Second Hand Item Purchase",
                     "itemName": "Linen Flower Dress",
                     "description": "A second-hand linen flower dress from Hongdae Thrift Shop",
-                    "savedCarbonFootprint": "20kg CO₂",
+                    "savedCarbonFootprint": 20.00,
                     "awardedPoint": 8
                 }
 
@@ -36,6 +36,16 @@ public class PromptConstants {
 
                     Respond in String format.
                     Example:
-                    "20kg CO₂"
+                    20.00
+            """;
+
+    public static final String CARBON_FOOTPRINT_BY_TEXT_PROMPT_LIST = """
+                    Please analyze the following product names and return the approximate amount of carbon footprint of the products:
+
+                    Product Names: {productNames}
+
+                    Respond in String format.
+                    Example:
+                    20.00, 10.00, 30.00
             """;
 }

@@ -1,5 +1,6 @@
 package com.example.lettuce.domain.carbonfootprint.entity;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import com.example.lettuce.global.shared.entity.BaseCreatedTimeEntity;
@@ -34,20 +35,20 @@ public class CarbonFootPrintReward extends BaseCreatedTimeEntity {
     @Column(name = "user_id", nullable = false, columnDefinition = "BIGINT COMMENT '회원 아이디'")
     private Long userId;
 
-    @Column(name = "image_url", nullable = true, columnDefinition = "VARCHAR(255) COMMENT '이미지 URL'")
+    @Column(name = "image_url", nullable = true, length = 255, columnDefinition = "VARCHAR(255) COMMENT '이미지 URL'")
     private String imageUrl;
 
-    @Column(name = "item_category", nullable = false, columnDefinition = "VARCHAR(255) COMMENT '상품 카테고리'")
+    @Column(name = "item_category", nullable = false, length = 255, columnDefinition = "VARCHAR(255) COMMENT '상품 카테고리'")
     private String itemCategory;
 
-    @Column(name = "item_name", nullable = false, columnDefinition = "VARCHAR(255) COMMENT '상품 이름'")
+    @Column(name = "item_name", nullable = false, length = 255, columnDefinition = "VARCHAR(255) COMMENT '상품 이름'")
     private String itemName;
 
-    @Column(name = "description", nullable = false, columnDefinition = "VARCHAR(255) COMMENT '상품 설명'")
+    @Column(name = "description", nullable = false, length = 255, columnDefinition = "VARCHAR(255) COMMENT '상품 설명'")
     private String description;
 
-    @Column(name = "saved_carbon_footprint", nullable = false, columnDefinition = "VARCHAR(255) COMMENT '절약된 Co2 배출량'")
-    private String savedCarbonFootprint;
+    @Column(name = "saved_carbon_footprint", nullable = false, columnDefinition = "DECIMAL(10,2) COMMENT '절약된 Co2 배출량 (kg)'")
+    private BigDecimal savedCarbonFootprint;
 
     @Column(name = "awarded_point", nullable = false, columnDefinition = "INT COMMENT '획득 포인트'")
     private int awardedPoint;

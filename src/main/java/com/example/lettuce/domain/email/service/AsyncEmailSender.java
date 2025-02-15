@@ -32,7 +32,6 @@ public class AsyncEmailSender {
     @Async("asyncExecutor")
     public void sendEmail(String to, String subject, String content) {
         try {
-
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
@@ -47,5 +46,4 @@ public class AsyncEmailSender {
             throw new RuntimeException("Failed to send email", e);
         }
     }
-
 }

@@ -1,5 +1,7 @@
 package com.example.lettuce.domain.carbonfootprint.service;
 
+import java.io.IOException;
+
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 
@@ -9,10 +11,13 @@ import com.example.lettuce.global.shared.mapper.CarbonFootPrintMapper;
 import com.example.lettuce.global.shared.s3.S3Service;
 import com.example.lettuce.global.shared.s3.UploadImageInfo;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class CarbonFootPrintEventListener implements ApplicationListener<CarbonFootprintImageEvent> {
 
     private final CarbonFootPrintMapper carbonFootPrintMapper;
@@ -20,13 +25,25 @@ public class CarbonFootPrintEventListener implements ApplicationListener<CarbonF
     private final S3Service s3Service;
 
     @Override
+    @Transactional
     public void onApplicationEvent(CarbonFootprintImageEvent event) {
 
-        UploadImageInfo uploadImageInfo = s3Service.uploadCarbonFootprintImage(event.getImage());
+        try {
+            UploadImageInfo uploadImageInfo = s3Service.uploadCarbonFootprintImage(event.getImage());
 
-        CarbonFootPrintReward carbonFootPrint = carbonFootPrintMapper.toEntity(event.getCarbonFootprintRewardResponse(),
-                event.getUser().getId(), uploadImageInfo.ImageUrl());
+            CarbonFootPrintReward carbonFootPrint = carbonFootPrintMapper.toEntity(
+                    event.getCarbonFootprintRewardResponse(),
+                    event.getUser().getId(), uploadImageInfo.imageUrl());
 
-        carbonFootprintRewardRepository.save(carbonFootPrint);
+            carbonFootprintRewardRepository.save(carbonFootPrint);
+        } catch (Exception e) {
+            log.error("CarbonFootprintImageEvent 처리 중 오류 발생", e);
+        } finally {
+            try {
+                event.getImage().getInputStream().close();
+            } catch (IOException e) {
+                log.warn("CarbonFootprintImageEvent 처리 중 오류 발생", e);
+            }
+        }
     }
 }
