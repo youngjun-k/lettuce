@@ -12,6 +12,10 @@ spring:
     multipart:
       max-file-size: 10MB
 
+  servlet:
+    multipart:
+      max-file-size: 10MB
+
   ai:
     openai:
       api-key: ${OPENAI_API_KEY}
@@ -22,11 +26,23 @@ spring:
     refresh-token-expire-time: 1d
 
   mail:    
+  mail:    
     host: ${EMAIL_HOST}
     port: ${EMAIL_PORT}
     username: ${EMAIL_USERNAME}
     password: ${EMAIL_PASSWORD}
 
+cloud:
+  aws:
+    credentials:
+      access-key: ${AWS_ACCESS_KEY}
+      secret-key: ${AWS_SECRET_KEY}
+    region:
+      static: ${AWS_REGION}
+    s3:
+      bucket: ${S3_BUCKET_NAME}
+
+lettuce:
 cloud:
   aws:
     credentials:

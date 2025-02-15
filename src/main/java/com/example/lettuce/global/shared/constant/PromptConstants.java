@@ -4,7 +4,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class PromptConstants {
+public class PromptConstants {    
 
     public static final String CARBON_FOOTPRINT_PROMPT = """
                 Please analyze the following image and extract the relevant details:
