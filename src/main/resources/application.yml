@@ -42,4 +42,5 @@ lettuce:
   crawler:
     coupang:
       base-url: ${COUPANG_BASE_URL}
+      base-product-url: ${COUPANG_PRODUCT_URL}
       list-url: ${COUPANG_LIST_URL}

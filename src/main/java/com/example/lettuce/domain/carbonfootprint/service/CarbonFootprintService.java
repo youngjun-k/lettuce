@@ -3,14 +3,16 @@ package com.example.lettuce.domain.carbonfootprint.service;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.lettuce.domain.carbonfootprint.dto.response.CarbonFootprintProductResponse;
 import com.example.lettuce.domain.carbonfootprint.dto.response.CarbonFootprintRewardResponse;
-import com.example.lettuce.domain.carbonfootprint.entity.CarbonFootPrintProduct;
 import com.example.lettuce.domain.carbonfootprint.repository.CarbonFootprintProductRepository;
 import com.example.lettuce.domain.user.entity.User;
+import com.example.lettuce.global.shared.constant.PromptConstants;
 import com.example.lettuce.global.shared.exception.BaseException;
 import com.example.lettuce.global.shared.exception.code.ErrorCode;
 import com.example.lettuce.global.shared.openai.OpenAiService;
@@ -43,7 +45,7 @@ public class CarbonFootprintService {
      *         calculated carbon footprint
      */
     public CarbonFootprintRewardResponse calculateFootprintByImage(MultipartFile image, User user) {
-        String response = openAiService.visionChat(image);
+        String response = openAiService.visionChat(PromptConstants.CARBON_FOOTPRINT_PROMPT, image);
         CarbonFootprintRewardResponse carbonFootprintRewardResponse = convertToCarbonFootprintRewardResponse(response);
 
         eventPublisher.publishEvent(new CarbonFootprintImageEvent(this, carbonFootprintRewardResponse, user, image));
@@ -64,13 +66,16 @@ public class CarbonFootprintService {
      */
     @Cacheable(value = "carbon_footprint_product_by_product_id", key = "#url.split('/')[4]")
     public CarbonFootprintProductResponse calculateFootprintByUrl(String url) {
-        CarbonFootPrintProduct carbonFootprintProduct = carbonFootprintProductRepository.findByUrl(url);
+        CarbonFootprintProductResponse carbonFootprintProduct = carbonFootprintProductRepository.findByUrl(url);
 
         eventPublisher.publishEvent(new CarbonFootprintProductEvent(this, carbonFootprintProduct));
 
-        return new CarbonFootprintProductResponse(carbonFootprintProduct.getName(),
-                carbonFootprintProduct.getUrl(),
-                carbonFootprintProduct.getThumbnailImageUrl(), carbonFootprintProduct.getCarbonFootprint());
+        return carbonFootprintProduct;
+    }
+
+    @Cacheable(value = "carbon_footprint_product_by_product_name", key = "#name")
+    public Page<CarbonFootprintProductResponse> calculateFootprintByName(String name, Pageable pageable) {
+        return carbonFootprintProductRepository.findByName(name, pageable);
     }
 
     private CarbonFootprintRewardResponse convertToCarbonFootprintRewardResponse(String response) {

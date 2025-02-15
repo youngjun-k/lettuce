@@ -13,7 +13,6 @@ import org.springframework.ai.model.Media;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.example.lettuce.global.shared.constant.PromptConstants;
 import com.example.lettuce.global.shared.exception.BaseException;
 import com.example.lettuce.global.shared.exception.code.ErrorCode;
 
@@ -34,9 +33,9 @@ public class OpenAiService {
      * @return String (Carbon Footprint)
      * @throws BaseException if OpenAI API call fails or image is not valid
      */
-    public String visionChat(MultipartFile image) {
+    public String visionChat(String prompt, MultipartFile image) {
         try {
-            UserMessage userMessage = new UserMessage(PromptConstants.CARBON_FOOTPRINT_PROMPT,
+            UserMessage userMessage = new UserMessage(prompt,
                     new Media(MimeTypeUtils.IMAGE_PNG, image.getResource()));
 
             return chatModel.call(new Prompt(userMessage, CHAT_OPTIONS)).getResult().getOutput().getText().trim();

@@ -1,6 +1,7 @@
 package com.example.lettuce.global.framework.security.provider;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Scope;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
@@ -8,6 +9,7 @@ import org.springframework.util.StringUtils;
 
 import com.example.lettuce.domain.user.entity.User;
 import com.example.lettuce.global.shared.constant.AuthConstants;
+import com.example.lettuce.global.framework.security.enums.TokenExpireTime;
 import com.example.lettuce.global.framework.security.principal.UserDetailsImpl;
 import com.example.lettuce.global.framework.security.principal.UserDetailsServiceImpl;
 import com.example.lettuce.global.shared.exception.CustomJwtException;
@@ -23,16 +25,12 @@ import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 
 import javax.crypto.SecretKey;
-import java.time.Duration;
 import java.util.*;
 
 @Component
+@Scope("singleton")
 public class JwtTokenProvider {
 
-    public static final Long ACCESS_TOKEN_EXPIRE_TIME = Duration.ofHours(6).toMillis();
-    public static final Long EMAIL_VERIFICATION_TOKEN_EXPIRE_TIME = Duration.ofHours(1).toMillis();
-    public static final Long RESET_PASSWORD_TOKEN_EXPIRE_TIME = Duration.ofMinutes(30).toMillis();
-    
     private final SecretKey key;
     private final UserDetailsServiceImpl userDetailsService;
 
@@ -45,15 +43,15 @@ public class JwtTokenProvider {
     }
 
     public String createAccessToken(User user) {
-        return buildToken(createUserClaims(user), ACCESS_TOKEN_EXPIRE_TIME);
+        return buildToken(createUserClaims(user), TokenExpireTime.ACCESS_TOKEN.getExpireTime());
     }
 
     public String createEmailVerificationToken(String email) {
-        return buildToken(createEmailClaims(email), EMAIL_VERIFICATION_TOKEN_EXPIRE_TIME);
+        return buildToken(createEmailClaims(email), TokenExpireTime.EMAIL_VERIFICATION_TOKEN.getExpireTime());
     }
 
     public String createResetPasswordToken(String email) {
-        return buildToken(createEmailClaims(email), RESET_PASSWORD_TOKEN_EXPIRE_TIME);
+        return buildToken(createEmailClaims(email), TokenExpireTime.RESET_PASSWORD_TOKEN.getExpireTime());
     }
 
     public Authentication getAuthentication(String token) {
