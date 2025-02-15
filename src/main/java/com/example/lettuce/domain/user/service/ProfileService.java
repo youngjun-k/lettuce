@@ -1,8 +1,12 @@
 package com.example.lettuce.domain.user.service;
 
+import java.util.Map;
+
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.lettuce.domain.user.dto.ProfileInfo;
 import com.example.lettuce.domain.user.dto.request.UpdateClientProfileRequest;
@@ -15,64 +19,75 @@ import com.example.lettuce.domain.user.entity.FarmerProfile;
 import com.example.lettuce.domain.user.entity.PartnerProfile;
 import com.example.lettuce.domain.user.entity.Profile;
 import com.example.lettuce.domain.user.entity.User;
+import com.example.lettuce.domain.user.repository.UserRepository;
 import com.example.lettuce.global.shared.mapper.ClientProfileMapper;
 import com.example.lettuce.global.shared.mapper.FarmerProfileMapper;
 import com.example.lettuce.global.shared.mapper.PartnerProfileMapper;
-
-import lombok.RequiredArgsConstructor;
+import com.example.lettuce.global.shared.mapper.ProfileMapper;
+import com.example.lettuce.global.shared.s3.S3Service;
+import com.example.lettuce.global.shared.s3.UploadImageInfo;
 
 @Service
-@RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class ProfileService {
 
-    private final ClientProfileMapper clientProfileMapper;
-    private final PartnerProfileMapper partnerProfileMapper;
-    private final FarmerProfileMapper farmerProfileMapper;
+    private final Map<Class<? extends Profile>, ProfileMapper<?, ?>> mappers;
+    private final S3Service s3Service;
+    private final UserRepository userRepository;
 
+    public ProfileService(ClientProfileMapper clientProfileMapper, PartnerProfileMapper partnerProfileMapper,
+            FarmerProfileMapper farmerProfileMapper, S3Service s3Service,
+            UserRepository userRepository) {
+
+        this.mappers = Map.of(
+                ClientProfile.class, clientProfileMapper,
+                PartnerProfile.class, partnerProfileMapper,
+                FarmerProfile.class, farmerProfileMapper);
+
+        this.s3Service = s3Service;
+        this.userRepository = userRepository;
+    }
+
+    @Cacheable(value = "profile", key = "#user.id")
     public ProfileResponse getProfile(User user) {
+        Profile profile = user.getProfile();
 
+        @SuppressWarnings("unchecked")
+        ProfileMapper<Object, Profile> mapper = (ProfileMapper<Object, Profile>) this.mappers.get(profile.getClass());
+
+        return new ProfileResponse(
+                mapper.toProfileInfo(user, profile),
+                mapper.toProfileSpecificResponse(profile));
+    }
+
+    @Transactional
+    @CacheEvict(value = "profile", key = "#user.id")
+    public void updateClientProfile(User user, UpdateClientProfileRequest profileRequest, MultipartFile profileImage) {
+        updateProfile(user, profileRequest, profileImage);
+    }
+
+    @Transactional
+    @CacheEvict(value = "profile", key = "#user.id")
+    public void updatePartnerProfile(User user, UpdatePartnerProfileRequest profileRequest,
+            MultipartFile profileImage) {
+        updateProfile(user, profileRequest, profileImage);
+    }
+
+    @Transactional
+    @CacheEvict(value = "profile", key = "#user.id")
+    public void updateFarmerProfile(User user, UpdateFarmerProfileRequest profileRequest, MultipartFile profileImage) {
+        updateProfile(user, profileRequest, profileImage);
+    }
+
+    private <T extends Profile> void updateProfile(User user, Object profileRequest, MultipartFile profileImage) {
         final Profile profile = user.getProfile();
-
-        final ProfileInfo profilInfo = buildProfileInfo(user, profile);
-        final ProfileSpecificResponse profileSpecificResponse = buildProfileSpecificResponse(profile);
-
-        return new ProfileResponse(profilInfo, profileSpecificResponse);
-    }
-
-    private ProfileInfo buildProfileInfo(User user, Profile profile) {
-        return switch (profile) {
-            case ClientProfile clientProfile -> clientProfileMapper.toProfileInfo(user, clientProfile);
-            case PartnerProfile partnerProfile -> partnerProfileMapper.toProfileInfo(user, partnerProfile);
-            case FarmerProfile farmerProfile -> farmerProfileMapper.toProfileInfo(user, farmerProfile);
-            default -> throw new IllegalArgumentException("Invalid profile type: " + profile);
-        };
-    }
-
-    private ProfileSpecificResponse buildProfileSpecificResponse(Profile profile) {
-        return switch (profile) {
-            case ClientProfile clientProfile -> clientProfileMapper.toProfileSpecificResponse(clientProfile);
-            case PartnerProfile partnerProfile -> partnerProfileMapper.toProfileSpecificResponse(partnerProfile);
-            case FarmerProfile farmerProfile -> farmerProfileMapper.toProfileSpecificResponse(farmerProfile);
-            default -> throw new IllegalArgumentException("Invalid profile type: " + profile);
-        };
-    }
-
-    @CacheEvict(value = "client_profile", key = "#p0.id")
-    public void updateClientProfile(User user, UpdateClientProfileRequest profileRequest) {
-        final ClientProfile clientProfile = (ClientProfile) user.getProfile();
-        clientProfile.updateProfile(profileRequest);
-    }
-
-    @CacheEvict(value = "partner_profile", key = "#p0.id")
-    public void updatePartnerProfile(User user, UpdatePartnerProfileRequest profileRequest) {
-        final PartnerProfile partnerProfile = (PartnerProfile) user.getProfile();
-        partnerProfile.updateProfile(profileRequest);
-    }
-
-    @CacheEvict(value = "farmer_profile", key = "#p0.id")
-    public void updateFarmerProfile(User user, UpdateFarmerProfileRequest profileRequest) {
-        final FarmerProfile farmerProfile = (FarmerProfile) user.getProfile();
-        farmerProfile.updateProfile(profileRequest);
+        if (profile instanceof ProfileUpdatable<?>) {
+            ((ProfileUpdatable<Object>) profile).updateProfile(profileRequest);
+        }
+        if (profileImage != null) {
+            UploadImageInfo uploadImageInfo = s3Service.uploadMemberProfileImage(profileImage);
+            profile.updateProfileImage(uploadImageInfo.imageUrl());
+        }
+        userRepository.save(user);
     }
 }

@@ -29,19 +29,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull FilterChain filterChain)
             throws ServletException, IOException {
 
+        String path = request.getRequestURI();
+
         String header = request.getHeader(HttpHeaders.AUTHORIZATION);
         if (header != null) {
             String token = jwtTokenProvider.resolveToken(header);
             if (jwtTokenProvider.isValidateToken(token)) {
-                authenticate(token);
+                authenticate(token, path);
             }
         }
 
         filterChain.doFilter(request, response);
     }
 
-    private void authenticate(String token) {
-        Authentication authentication = jwtTokenProvider.getAuthentication(token);
+    private void authenticate(String token, String path) {
+        Authentication authentication = jwtTokenProvider.getAuthentication(token, path);
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 

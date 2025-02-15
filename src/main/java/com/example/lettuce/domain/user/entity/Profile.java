@@ -1,5 +1,6 @@
 package com.example.lettuce.domain.user.entity;
 
+import com.example.lettuce.domain.user.dto.request.UpdateUserProfileRequest;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
@@ -33,7 +34,15 @@ public abstract class Profile {
     @Column(name = "profile_image", length = 255, columnDefinition = "VARCHAR(255) COMMENT '회원 프로필 이미지 URL'")
     private String profileImage;
 
+    public void updateBaseProfile(UpdateUserProfileRequest profileRequest) {
+        this.nickname = profileRequest.getNickname();
+    }
+
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public void updateProfileImage(String profileImage) {
+        this.profileImage = profileImage;
     }
 }

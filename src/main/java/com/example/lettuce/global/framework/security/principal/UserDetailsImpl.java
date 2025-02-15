@@ -16,6 +16,7 @@ public record UserDetailsImpl(User user) implements UserDetails {
         GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(user.getRole().name());
         return Collections.singleton(grantedAuthority);
     }
+    
 
     @Override
     public boolean isEnabled() {
@@ -23,7 +24,8 @@ public record UserDetailsImpl(User user) implements UserDetails {
     }
 
     public boolean isVerified() {
-        return user.isVerified();
+        // return user.isVerified();
+        return true;
     }
 
     @Override

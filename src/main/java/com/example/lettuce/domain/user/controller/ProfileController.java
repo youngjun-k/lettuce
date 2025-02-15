@@ -1,11 +1,13 @@
 package com.example.lettuce.domain.user.controller;
 
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.lettuce.domain.user.dto.request.UpdateClientProfileRequest;
 import com.example.lettuce.domain.user.dto.request.UpdateFarmerProfileRequest;
@@ -36,27 +38,33 @@ public class ProfileController {
         return CommonResponse.success(SuccessCode.SUCCESS, profileService.getProfile(user));
     }
 
-    @PatchMapping("/client")
+    @PutMapping(value = "/client", consumes = { MediaType.APPLICATION_JSON_VALUE,
+            MediaType.MULTIPART_FORM_DATA_VALUE })
     public ResponseEntity<CommonResponse<VoidResponse>> updateClientProfile(
-            @LoginUser User user,
-            @Valid @RequestBody UpdateClientProfileRequest profileRequest) {
-        profileService.updateClientProfile(user, profileRequest);
+            @RequestPart(name = "image", required = false) MultipartFile profileImage,
+            @RequestPart(name = "request") @Valid UpdateClientProfileRequest profileRequest,
+            @LoginUser User user) {
+        profileService.updateClientProfile(user, profileRequest, profileImage);
         return CommonResponse.success(SuccessCode.SUCCESS_UPDATE);
     }
 
-    @PatchMapping("/partner")
+    @PutMapping(value = "/partner", consumes = { MediaType.APPLICATION_JSON_VALUE,
+            MediaType.MULTIPART_FORM_DATA_VALUE })
     public ResponseEntity<CommonResponse<VoidResponse>> updatePartnerProfile(
-            @LoginUser User user,
-            @Valid @RequestBody UpdatePartnerProfileRequest profileRequest) {
-        profileService.updatePartnerProfile(user, profileRequest);
+            @RequestPart(name = "image", required = false) MultipartFile profileImage,
+            @RequestPart(name = "request") @Valid UpdatePartnerProfileRequest profileRequest,
+            @LoginUser User user) {
+        profileService.updatePartnerProfile(user, profileRequest, profileImage);
         return CommonResponse.success(SuccessCode.SUCCESS_UPDATE);
     }
 
-    @PatchMapping("/farmer")
+    @PutMapping(value = "/farmer", consumes = { MediaType.APPLICATION_JSON_VALUE,
+            MediaType.MULTIPART_FORM_DATA_VALUE })
     public ResponseEntity<CommonResponse<VoidResponse>> updateFarmerProfile(
-            @LoginUser User user,
-            @Valid @RequestBody UpdateFarmerProfileRequest profileRequest) {
-        profileService.updateFarmerProfile(user, profileRequest);
+            @RequestPart(name = "image", required = false) MultipartFile profileImage,
+            @RequestPart(name = "request") @Valid UpdateFarmerProfileRequest profileRequest,
+            @LoginUser User user) {
+        profileService.updateFarmerProfile(user, profileRequest, profileImage);
         return CommonResponse.success(SuccessCode.SUCCESS_UPDATE);
     }
 

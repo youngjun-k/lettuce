@@ -6,7 +6,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.example.lettuce.domain.user.entity.User;
-import com.example.lettuce.domain.user.repository.UserRepository;
+import com.example.lettuce.domain.user.service.UserService;
 import com.example.lettuce.global.shared.exception.AuthenticationException;
 import com.example.lettuce.global.shared.exception.code.ErrorCode;
 
@@ -16,15 +16,21 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {
 
-    private final UserRepository userRepository;
+    private final UserService userService;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = userRepository.findByEmailAndDeletedAtIsNullWithProfiles(email);
+        User user = userService.findByEmail(email);
 
-        if (user == null) {
-            throw new AuthenticationException(ErrorCode.NOT_FOUND_USER);
-        }
+        UserDetailsImpl userDetails = new UserDetailsImpl(user);
+
+        validateUser(userDetails);
+
+        return userDetails;
+    }
+
+    public UserDetails loadUserWithProfileByEmail(String email) throws UsernameNotFoundException {
+        User user = userService.findByEmailWithProfiles(email);
 
         UserDetailsImpl userDetails = new UserDetailsImpl(user);
 

@@ -31,54 +31,64 @@ import java.util.*;
 @Scope("singleton")
 public class JwtTokenProvider {
 
+    private static final String PROFILE_PATH = "/api/user/profile";
+    private static final String ID_CLAIM = "id";
+    private static final String EMAIL_CLAIM = "email";
+    private static final String ROLE_CLAIM = "role";
+
     private final SecretKey key;
     private final UserDetailsServiceImpl userDetailsService;
 
     public JwtTokenProvider(
             @Value("${spring.jwt.secret}") String key,
             UserDetailsServiceImpl userDetailsService) {
-        byte[] keyBytes = Base64.getDecoder().decode(key);
-        this.key = Keys.hmacShaKeyFor(keyBytes);
+        this.key = Keys.hmacShaKeyFor(Base64.getDecoder().decode(key));
         this.userDetailsService = userDetailsService;
     }
 
     public String createAccessToken(User user) {
-        return buildToken(createUserClaims(user), TokenExpireTime.ACCESS_TOKEN.getExpireTime());
+        Map<String, Object> claims = new HashMap<>(3);
+        claims.put(ID_CLAIM, user.getId());
+        claims.put(EMAIL_CLAIM, user.getEmail());
+        claims.put(ROLE_CLAIM, user.getRole());
+        return buildToken(claims, TokenExpireTime.ACCESS_TOKEN.getExpireTime());
     }
 
     public String createEmailVerificationToken(String email) {
-        return buildToken(createEmailClaims(email), TokenExpireTime.EMAIL_VERIFICATION_TOKEN.getExpireTime());
+        return buildToken(Collections.singletonMap(EMAIL_CLAIM, email),
+                TokenExpireTime.EMAIL_VERIFICATION_TOKEN.getExpireTime());
     }
 
     public String createResetPasswordToken(String email) {
-        return buildToken(createEmailClaims(email), TokenExpireTime.RESET_PASSWORD_TOKEN.getExpireTime());
+        return buildToken(Collections.singletonMap(EMAIL_CLAIM, email),
+                TokenExpireTime.RESET_PASSWORD_TOKEN.getExpireTime());
     }
 
-    public Authentication getAuthentication(String token) {
-        UserDetailsImpl userDetails = (UserDetailsImpl) userDetailsService.loadUserByUsername(getEmailByToken(token));
+    public Authentication getAuthentication(String token, String path) {
+        String email = getEmailByToken(token);
+        UserDetailsImpl userDetails = (UserDetailsImpl) (path.startsWith(PROFILE_PATH)
+                ? userDetailsService.loadUserWithProfileByEmail(email)
+                : userDetailsService.loadUserByUsername(email));
+
         return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
     }
 
     public String resolveToken(String header) {
         return Optional.ofNullable(header)
-                .orElseThrow(() -> new InvalidParamException(ErrorCode.INVALID_AUTHENTICATION))
-                .replace(AuthConstants.TOKEN_PREFIX, "");
+                .map(h -> h.replace(AuthConstants.TOKEN_PREFIX, ""))
+                .orElseThrow(() -> new InvalidParamException(ErrorCode.INVALID_AUTHENTICATION));
     }
 
     public boolean isValidateToken(String token) {
-        if (!StringUtils.hasText(token)) {
-            return false;
-        }
-
-        return !getExpirationByToken(token).before(new Date());
+        return StringUtils.hasText(token) && !getExpirationByToken(token).before(new Date());
     }
 
     public Long getUserIdFromToken(String token) {
-        return parseClaims(token).get("id", Long.class);
+        return parseClaims(token).get(ID_CLAIM, Long.class);
     }
 
     public String getEmailByToken(String token) {
-        return parseClaims(token).get("email", String.class);
+        return parseClaims(token).get(EMAIL_CLAIM, String.class);
     }
 
     public Date getExpirationByToken(String token) {
@@ -103,28 +113,12 @@ public class JwtTokenProvider {
         }
     }
 
-    private HashMap<String, Object> createUserClaims(User user) {
-        HashMap<String, Object> hashMap = new HashMap<>();
-        hashMap.put("id", user.getId());
-        hashMap.put("email", user.getEmail());
-        hashMap.put("role", user.getRole());
-        return hashMap;
-    }
-
-    private HashMap<String, Object> createEmailClaims(String email) {
-        HashMap<String, Object> hashMap = new HashMap<>();
-        hashMap.put("email", email);
-        return hashMap;
-    }
-
-    public String buildToken(HashMap<String, Object> claims, long expireTime) {
+    public String buildToken(Map<String, Object> claims, long expireTime) {
         Date now = new Date();
-        long tokenExpireTime = now.getTime() + expireTime;
-
         return Jwts.builder()
                 .claims(claims)
                 .issuedAt(now)
-                .expiration(new Date(tokenExpireTime))
+                .expiration(new Date(now.getTime() + expireTime))
                 .signWith(key)
                 .compact();
     }
