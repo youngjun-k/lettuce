@@ -25,7 +25,7 @@ public class UserService {
      * @return User
      * @throws BaseException if the user is not found
      */
-    @Cacheable(value = "user_email", key = "#p0")
+    @Cacheable(value = "user_email", key = "#p0")    
     public User findByEmail(String email) {
         User user = userRepository.findByEmailAndDeletedAtIsNull(email);
         if (user == null) {

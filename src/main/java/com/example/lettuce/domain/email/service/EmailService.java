@@ -4,28 +4,34 @@ import com.example.lettuce.domain.auth.service.UserRegistrationEvent;
 import com.example.lettuce.domain.email.dto.request.EmailResetPasswordRequest;
 import com.example.lettuce.domain.email.dto.request.EmailVerifyRequest;
 import com.example.lettuce.domain.user.service.UserService;
-import com.example.lettuce.global.shared.config.AppConfig;
 import com.example.lettuce.global.shared.constant.EmailConstants;
 import com.example.lettuce.global.framework.security.provider.JwtTokenProvider;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.commons.text.StringSubstitutor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
 
 @Service
-@RequiredArgsConstructor
 public class EmailService {
 
     private final AsyncEmailSender asyncEmailSender;
     private final JwtTokenProvider jwtTokenProvider;
     private final UserService userService;
-    private final AppConfig appConfig;
+    private final String baseUrl;
+
+    public EmailService(AsyncEmailSender asyncEmailSender, JwtTokenProvider jwtTokenProvider, UserService userService,
+            @Value("${lettuce.base-url}") String baseUrl) {
+        this.asyncEmailSender = asyncEmailSender;
+        this.jwtTokenProvider = jwtTokenProvider;
+        this.userService = userService;
+        this.baseUrl = baseUrl;
+    }
 
     @EventListener
-    public void sendWelcomeEmail(UserRegistrationEvent event) {
+    private void sendWelcomeEmail(UserRegistrationEvent event) {
         sendEmail(event.getEmail(),
                 EmailConstants.WELCOME_EMAIL_SUBJECT,
                 EmailConstants.WELCOME_EMAIL_HTML,
@@ -49,12 +55,8 @@ public class EmailService {
     }
 
     private void sendEmail(String email, String subject, String template, String token) {
-        // http://localhost:8080/api/auth/verify-email?token=$%7Btoken%7D
-        // it should be
-        // http://localhost:8080/api/auth/verify-email?token=token
-
         Map<String, String> values = Map.of(
-                "baseUrl", appConfig.getBaseUrl(),
+                "baseUrl", baseUrl,
                 "encodedToken", token);
         String emailHtml = StringSubstitutor.replace(template, values);
         asyncEmailSender.sendEmail(email, subject, emailHtml);

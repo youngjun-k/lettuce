@@ -76,6 +76,7 @@ public enum ErrorCode {
     // 500
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 오류가 발생했습니다."),
     OPENAI_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "OpenAI 오류가 발생했습니다."),
+    S3_UPLOADER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "S3 업로드 오류가 발생했습니다."),
 
     // 503
     AUTHENTICATION_SERVICE_UNAVAILABLE(HttpStatus.SERVICE_UNAVAILABLE, "인증 서비스를 사용할 수 없습니다."),
