@@ -11,7 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Setter
 @Component
-@ConfigurationProperties(prefix = "lettuce.crawler.coupang")
+@ConfigurationProperties(prefix = "spring.crawler.coupang")
 @Slf4j
 public class CoupangProperties {
     private String baseUrl;

@@ -1,6 +1,7 @@
 spring:
   application:
     name: lettuce
+    client-base-url: ${CLIENT_BASE_URL}
 
   config:
     import:
@@ -28,8 +29,6 @@ spring:
     username: ${EMAIL_USERNAME}
     password: ${EMAIL_PASSWORD}
 
-lettuce:
-  base-url: ${BASE_URL}
   crawler:
     coupang:
       base-url: ${COUPANG_BASE_URL}

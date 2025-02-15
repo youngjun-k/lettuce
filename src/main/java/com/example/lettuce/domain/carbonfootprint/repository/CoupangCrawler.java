@@ -38,6 +38,7 @@ public class CoupangCrawler implements CarbonFootprintProductRepository {
     private static final String DECIMAL_SEPARATE_BY_COMMA_REGEX = "\\d+\\.\\d+(?:,\\s*\\d+\\.\\d+)*";
     private static final String USER_AGENT = "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Mobile Safari/537.36";
     private static final String ACCEPT_LANGUAGE = "en-US,en;q=0.9";
+    private static final String HTTPS_PREFIX = "https:";
 
     @Override
     public CarbonFootprintProductResponse findByUrl(String url) {
@@ -46,8 +47,8 @@ public class CoupangCrawler implements CarbonFootprintProductRepository {
             throw new BaseException(ErrorCode.NOT_FOUND);
         }
 
-        String title = bodyElement.select("h1.ProductInfo_title__fLscZ").first().text();
-        String thumbnailUrl = bodyElement.select("#MWEB_PRODUCT_DETAIL_ITEM_THUMBNAILS img").attr("src");
+        String title = bodyElement.selectFirst("h1.ProductInfo_title__fLscZ").text();
+        String thumbnailUrl = bodyElement.selectFirst("#MWEB_PRODUCT_DETAIL_ITEM_THUMBNAILS img").attr("src");
         String carbonFootprint = getCarbonFootprint(title);
 
         return new CarbonFootprintProductResponse(title, url, thumbnailUrl, new BigDecimal(carbonFootprint));
@@ -59,22 +60,23 @@ public class CoupangCrawler implements CarbonFootprintProductRepository {
         Element bodyElement = getBodyElement(url);
 
         if (bodyElement == null) {
-            return new PageImpl<>(Collections.emptyList());
+            return new PageImpl<>(Collections.emptyList(), pageable, 0);
         }
 
         Elements productItems = bodyElement.select("li.plp-default__item");
         if (productItems.isEmpty()) {
-            return new PageImpl<>(Collections.emptyList());
+            return new PageImpl<>(Collections.emptyList(), pageable, 0);
         }
 
         List<CarbonFootprintProductResponse> responses = productItems.stream()
                 .map(this::createProductResponse)
                 .collect(Collectors.toList());
 
-        List<BigDecimal> carbonFootprints = getCarbonFootprintList(
-                responses.stream()
-                        .map(CarbonFootprintProductResponse::getName)
-                        .collect(Collectors.joining(", ")));
+        String productNames = responses.stream()
+                .map(CarbonFootprintProductResponse::getName)
+                .collect(Collectors.joining(", "));
+
+        List<BigDecimal> carbonFootprints = getCarbonFootprintList(productNames);
 
         IntStream.range(0, Math.min(responses.size(), carbonFootprints.size()))
                 .forEach(i -> responses.get(i).setCarbonFootprint(carbonFootprints.get(i)));
@@ -83,18 +85,20 @@ public class CoupangCrawler implements CarbonFootprintProductRepository {
     }
 
     private CarbonFootprintProductResponse createProductResponse(Element item) {
-        String title = item.select("strong.title").text();
-        return new CarbonFootprintProductResponse(title, getProductUrl(item), getImageUrl(item));
+        return new CarbonFootprintProductResponse(
+                item.select("strong.title").text(),
+                getProductUrl(item),
+                getImageUrl(item));
     }
 
     private String getProductUrl(Element item) {
-        String productUrl = item.select("a.sdw-similar-product-go-to-sdp-click").attr("href");
-        return coupangProperties.getBaseProductUrl(productUrl);
+        return coupangProperties.getBaseProductUrl(
+                item.select("a.sdw-similar-product-go-to-sdp-click").attr("href"));
     }
 
     private String getImageUrl(Element item) {
         String imageUrl = item.select("img.loading").attr("src");
-        return imageUrl.startsWith("//") ? "https:" + imageUrl : imageUrl;
+        return imageUrl.startsWith("//") ? HTTPS_PREFIX + imageUrl : imageUrl;
     }
 
     private String getCarbonFootprint(String productName) {
@@ -117,7 +121,7 @@ public class CoupangCrawler implements CarbonFootprintProductRepository {
                     .map(s -> s.isEmpty() ? BigDecimal.ZERO : new BigDecimal(s))
                     .collect(Collectors.toList());
         } catch (Exception e) {
-            log.error("Error getting carbon footprints", e);
+            log.error("Error getting carbon footprints: {}", e.getMessage());
             return Collections.emptyList();
         }
     }

@@ -23,7 +23,7 @@ public class EmailService {
     private final String baseUrl;
 
     public EmailService(AsyncEmailSender asyncEmailSender, JwtTokenProvider jwtTokenProvider, UserService userService,
-            @Value("${lettuce.base-url}") String baseUrl) {
+            @Value("${spring.application.client-base-url}") String baseUrl) {
         this.asyncEmailSender = asyncEmailSender;
         this.jwtTokenProvider = jwtTokenProvider;
         this.userService = userService;
