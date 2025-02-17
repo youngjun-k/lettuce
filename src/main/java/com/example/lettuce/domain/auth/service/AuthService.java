@@ -78,7 +78,7 @@ public class AuthService {
     /**
      * Helper method that encapsulates registration logic.
      *
-     * @param request       Registration request.
+    * @param request       Registration request.
      * @param role          The user role.
      * @param profileMapper Lambda to map the request and user to a profile.
      * @param <T>           Type extending CreateUserRequest.

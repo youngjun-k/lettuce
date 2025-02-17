@@ -47,12 +47,13 @@ public class ClientProfile extends Profile implements ProfileUpdatable<UpdateCli
 
     @Override
     public void updateProfile(UpdateClientProfileRequest profileRequest) {
-        this.birthday = profileRequest.birthday();
-        this.gender = profileRequest.gender();
-        this.height = profileRequest.height();
-        this.weight = profileRequest.weight();
-        this.fitnessGoals = profileRequest.fitnessGoals();
-        this.activityLevel = profileRequest.activityLevel();
+        super.updateBaseProfile(profileRequest);
+        this.birthday = profileRequest.getBirthday();
+        this.gender = profileRequest.getGender();
+        this.height = profileRequest.getHeight();
+        this.weight = profileRequest.getWeight();
+        this.fitnessGoals = profileRequest.getFitnessGoals();
+        this.activityLevel = profileRequest.getActivityLevel();
     }
 
     public int getAge() {

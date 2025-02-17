@@ -32,8 +32,9 @@ public class PartnerProfile extends Profile implements ProfileUpdatable<UpdatePa
 
     @Override
     public void updateProfile(UpdatePartnerProfileRequest profileRequest) {
-        this.partnerDescription = profileRequest.partnerDescription();
-        this.partnerPhone = profileRequest.partnerPhone();
-        this.partnerAddress = profileRequest.partnerAddress();
+        super.updateBaseProfile(profileRequest);
+        this.partnerDescription = profileRequest.getPartnerDescription();
+        this.partnerPhone = profileRequest.getPartnerPhone();
+        this.partnerAddress = profileRequest.getPartnerAddress();
     }
 }

@@ -12,7 +12,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     User findByEmailAndDeletedAtIsNull(String email);
 
-    // * When Spring Securiy is used, the user is not fetched with profiles.
+    // * When Spring Securiy is used, the user entity is detached from entity manager.
     // * we need to fetch the user with profiles.
     // * The downfall of this is that every time the user is fetched with profiles, even if the profile is not needed, the query is executed.
     @Query("SELECT u FROM User u LEFT JOIN FETCH u.clientProfile cp LEFT JOIN FETCH u.partnerProfile pp LEFT JOIN FETCH u.farmerProfile fp WHERE u.email = :email AND u.deletedAt IS NULL")
