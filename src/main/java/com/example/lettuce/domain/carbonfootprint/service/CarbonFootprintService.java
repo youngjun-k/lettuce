@@ -48,7 +48,6 @@ public class CarbonFootprintService {
      */
     public CarbonFootprintRewardResponse calculateFootprintByImage(MultipartFile image, User user) {
         String response = openAiService.visionChat(PromptConstants.CARBON_FOOTPRINT_PROMPT, image);
-        System.out.println("response: " + response);
         CarbonFootprintRewardResponse carbonFootprintRewardResponse = convertToCarbonFootprintRewardResponse(response);
 
         try {
@@ -57,8 +56,7 @@ public class CarbonFootprintService {
         } catch (IOException e) {
             throw new BaseException(ErrorCode.IMAGE_PROCESSING_ERROR);
         }
-
-        System.out.println("CarbonFootprintService 종료");
+        
         return carbonFootprintRewardResponse;
     }
 

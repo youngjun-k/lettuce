@@ -1,10 +1,9 @@
-package com.example.lettuce.domain.user.enums;
+package com.example.lettuce.domain.user.service;
 
 import com.example.lettuce.domain.user.dto.request.UpdateFarmerProfileRequest;
 import com.example.lettuce.domain.user.dto.request.UpdateUserProfileRequest;
 import com.example.lettuce.domain.user.entity.FarmerProfile;
 import com.example.lettuce.domain.user.entity.Profile;
-import com.example.lettuce.domain.user.service.ProfileUpdateStrategy;
 
 public class FarmerProfileUpdateStrategy implements ProfileUpdateStrategy {
 

@@ -3,6 +3,7 @@ package com.example.lettuce.domain.user.enums;
 import org.mapstruct.factory.Mappers;
 
 import com.example.lettuce.domain.user.service.ClientProfileUpdateStrategy;
+import com.example.lettuce.domain.user.service.FarmerProfileUpdateStrategy;
 import com.example.lettuce.domain.user.service.PartnerProfileUpdateStrategy;
 import com.example.lettuce.domain.user.service.ProfileUpdateStrategy;
 import com.example.lettuce.global.shared.mapper.ClientProfileMapper;
@@ -38,15 +39,15 @@ public enum UserRole {
     }
 
     public String getRoleName() {
-        return roleName;
+        return this.roleName;
     }
 
     public ProfileMapper<?, ?, ?> getProfileMapper() {
-        return profileMapper;
+        return this.profileMapper;
     }
 
     public ProfileUpdateStrategy getProfileUpdateStrategy() {
-        return profileUpdateStrategy;
+        return this.profileUpdateStrategy;
     }
 
     // Helper method to convert from String to enum

@@ -27,7 +27,6 @@ public class CarbonFootPrintEventListener implements ApplicationListener<CarbonF
     public void onApplicationEvent(CarbonFootprintImageEvent event) {
 
         try {
-            System.out.println("CarbonFootprintImageEvent 처리 시작");
             UploadImageInfo uploadImageInfo = s3Service.uploadCarbonFootprintImage(event.getImageContent(),
                     event.getFilename(), event.getContentType());
 
