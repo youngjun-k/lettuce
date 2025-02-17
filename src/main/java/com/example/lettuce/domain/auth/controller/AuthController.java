@@ -17,6 +17,7 @@ import com.example.lettuce.domain.auth.dto.request.ResetPasswordRequest;
 import com.example.lettuce.domain.auth.dto.response.AuthResponse;
 import com.example.lettuce.domain.auth.service.AuthService;
 import com.example.lettuce.domain.user.entity.User;
+import com.example.lettuce.domain.user.enums.UserRole;
 import com.example.lettuce.global.shared.response.CommonResponse;
 import com.example.lettuce.global.shared.response.VoidResponse;
 import com.example.lettuce.global.framework.annotation.RateLimitType;
@@ -44,21 +45,21 @@ public class AuthController {
     public ResponseEntity<CommonResponse<VoidResponse>> registerClient(
             @Valid @RequestBody CreateClientRequest request) {
 
-        authService.clientRegister(request);
+        authService.registerUser(request, UserRole.CLIENT);
         return CommonResponse.success(SuccessCode.SUCCESS_INSERT);
     }
 
     @PostMapping("/register/partner")
     public ResponseEntity<CommonResponse<VoidResponse>> registerPartner(
             @Valid @RequestBody CreatePartnerRequest request) {
-        authService.partnerRegister(request);
+        authService.registerUser(request, UserRole.BUSINESS_PARTNER);
         return CommonResponse.success(SuccessCode.SUCCESS_INSERT);
     }
 
     @PostMapping("/register/farmer")
     public ResponseEntity<CommonResponse<VoidResponse>> registerFarmer(
             @Valid @RequestBody CreateFarmerRequest request) {
-        authService.farmerRegister(request);
+        authService.registerUser(request, UserRole.FARMER);
         return CommonResponse.success(SuccessCode.SUCCESS_INSERT);
     }
 

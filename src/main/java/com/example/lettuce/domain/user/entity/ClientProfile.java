@@ -15,6 +15,7 @@ import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -38,6 +39,7 @@ public class ClientProfile extends Profile implements ProfileUpdatable<UpdateCli
     @Column(name = "weight", nullable = false, columnDefinition = "FLOAT COMMENT '회원 몸무게'")
     private Float weight;
 
+    @Builder.Default
     @Convert(converter = FitnessGoalConverter.class)
     @Column(name = "fitness_goals", nullable = false, columnDefinition = "VARCHAR(255) COMMENT '회원 운동 목표'")
     private Set<FitnessGoal> fitnessGoals = new HashSet<>();

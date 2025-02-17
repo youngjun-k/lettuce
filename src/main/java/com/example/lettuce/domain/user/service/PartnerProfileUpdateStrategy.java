@@ -1,0 +1,24 @@
+package com.example.lettuce.domain.user.service;
+
+import com.example.lettuce.domain.user.dto.request.UpdatePartnerProfileRequest;
+import com.example.lettuce.domain.user.dto.request.UpdateUserProfileRequest;
+import com.example.lettuce.domain.user.entity.PartnerProfile;
+import com.example.lettuce.domain.user.entity.Profile;
+
+public class PartnerProfileUpdateStrategy implements ProfileUpdateStrategy {
+
+    @Override
+    public void validateRequest(UpdateUserProfileRequest<?> request) {
+        if (!(request instanceof UpdatePartnerProfileRequest)) {
+            throw new IllegalArgumentException("Invalid request type for partner profile");
+        }
+    }
+
+    @Override
+    public void updateProfile(Profile profile, UpdateUserProfileRequest<?> request) {
+        UpdatePartnerProfileRequest partnerRequest = (UpdatePartnerProfileRequest) request;
+        PartnerProfile partnerProfile = (PartnerProfile) profile;
+        partnerProfile.updateProfile(partnerRequest);
+    }
+
+}

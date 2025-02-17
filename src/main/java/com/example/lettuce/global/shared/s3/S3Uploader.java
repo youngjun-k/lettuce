@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -30,6 +31,7 @@ public class S3Uploader {
     public static final String DATE_FORMAT_YYYYMMDD = "yyyy/MM/dd";
 
     public UploadImageInfo uploadMultipartFileToBucket(String category, MultipartFile file) {
+
         String filePath = getFilePath(category, file.getName());
         ObjectMetadata metadata = createMetadataFromFile(file);
 
@@ -40,6 +42,27 @@ public class S3Uploader {
         } catch (Exception e) {
             log.error("S3 파일 업로드 실패. category: {}, fileName: {}, error: {}",
                     category, file.getName(), e.getMessage(), e);
+
+            throw new BaseException(ErrorCode.S3_UPLOADER_ERROR);
+        }
+
+        return new UploadImageInfo(getUrlFromBucket(filePath));
+    }
+
+    public UploadImageInfo uploadBytesToBucket(String category, byte[] imageContent, String filename,
+            String contentType) {
+        String filePath = getFilePath(category, filename);
+        ObjectMetadata metadata = new ObjectMetadata();
+        metadata.setContentType(contentType);
+        metadata.setContentLength(imageContent.length);
+
+        try (var inputStream = new ByteArrayInputStream(imageContent)) {
+            amazonS3.putObject(
+                    new PutObjectRequest(bucket, filePath, inputStream, metadata)
+                            .withCannedAcl(CannedAccessControlList.PublicRead));
+        } catch (Exception e) {
+            log.error("S3 파일 업로드 실패. category: {}, fileName: {}, error: {}",
+                    category, filename, e.getMessage(), e);
             throw new BaseException(ErrorCode.S3_UPLOADER_ERROR);
         }
 
@@ -58,6 +81,10 @@ public class S3Uploader {
     }
 
     private ObjectMetadata createMetadataFromFile(MultipartFile file) {
+
+        File tmpFile = new File(file.getOriginalFilename());
+        log.info("Temporary file exists: {}", tmpFile.exists());
+
         String contentType = file.getContentType();
         if (contentType == null || !contentType.startsWith("image/")) {
             throw new BaseException(ErrorCode.S3_UPLOADER_ERROR);

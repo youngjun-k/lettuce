@@ -12,6 +12,7 @@ spring:
 
   servlet:
     multipart:
+      location: /tmp
       max-file-size: 10MB
 
   ai:
