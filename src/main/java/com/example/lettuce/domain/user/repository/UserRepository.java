@@ -21,7 +21,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     /* Fetch Projection instead of Entity for performance
      * Fetch Projection is a feature that allows you to fetch a subset of the entity's fields.
      * This can be more efficient than fetching the entire entity, especially if the entity has many fields.
-     * It saves the cost of fetching the entire entity and the memory usage.     
+     * It saves the cost of fetching the entire entity and the memory usage.
      */
     <T> T findByEmailAndDeletedAtIsNull(String email, Class<T> projection);
 

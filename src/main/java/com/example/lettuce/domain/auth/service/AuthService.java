@@ -1,7 +1,5 @@
 package com.example.lettuce.domain.auth.service;
 
-import java.util.function.BiFunction;
-
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.cache.annotation.CacheEvict;
@@ -12,9 +10,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import com.example.lettuce.domain.auth.controller.DeleteAccountRequest;
-import com.example.lettuce.domain.auth.dto.request.CreateClientRequest;
-import com.example.lettuce.domain.auth.dto.request.CreateFarmerRequest;
-import com.example.lettuce.domain.auth.dto.request.CreatePartnerRequest;
 import com.example.lettuce.domain.auth.dto.request.CreateUserRequest;
 import com.example.lettuce.domain.auth.dto.request.LoginRequest;
 import com.example.lettuce.domain.auth.dto.request.ResetPasswordRequest;
@@ -27,10 +22,7 @@ import com.example.lettuce.domain.user.enums.UserRole;
 import com.example.lettuce.domain.user.service.UserService;
 import com.example.lettuce.global.framework.security.provider.JwtTokenProvider;
 import com.example.lettuce.global.shared.constant.AuthConstants;
-
-import com.example.lettuce.global.shared.mapper.ClientProfileMapper;
-import com.example.lettuce.global.shared.mapper.FarmerProfileMapper;
-import com.example.lettuce.global.shared.mapper.PartnerProfileMapper;
+import com.example.lettuce.global.shared.mapper.ProfileMapper;
 import com.example.lettuce.global.shared.mapper.UserMapper;
 import com.example.lettuce.global.shared.exception.AuthenticationException;
 import com.example.lettuce.global.shared.exception.BaseException;
@@ -45,9 +37,6 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final UserMapper userMapper;
-    private final ClientProfileMapper clientProfileMapper;
-    private final PartnerProfileMapper partnerProfileMapper;
-    private final FarmerProfileMapper farmerProfileMapper;
     private final ApplicationEventPublisher eventPublisher;
 
     public AuthResponse login(LoginRequest request) {
@@ -63,22 +52,10 @@ public class AuthService {
         return createAuthResponse(user);
     }
 
-    public void clientRegister(CreateClientRequest request) {
-        registerUser(request, UserRole.CLIENT, clientProfileMapper::toProfile);
-    }
-
-    public void partnerRegister(CreatePartnerRequest request) {
-        registerUser(request, UserRole.BUSINESS_PARTNER, partnerProfileMapper::toProfile);
-    }
-
-    public void farmerRegister(CreateFarmerRequest request) {
-        registerUser(request, UserRole.FARMER, farmerProfileMapper::toProfile);
-    }
-
     /**
      * Helper method that encapsulates registration logic.
      *
-    * @param request       Registration request.
+     * @param request       Registration request.
      * @param role          The user role.
      * @param profileMapper Lambda to map the request and user to a profile.
      * @param <T>           Type extending CreateUserRequest.
@@ -86,17 +63,17 @@ public class AuthService {
      */
     @Transactional
     @CacheEvict(value = "user_email", key = "#p0.email")
-    private <T extends CreateUserRequest> void registerUser(T request, UserRole role,
-            BiFunction<T, User, Profile> profileMapper) {
+    public <T extends CreateUserRequest> void registerUser(T request, UserRole role) {
         final String email = request.getEmail();
-        final String rawPassword = request.getPassword();
-
         userService.isNotRegisteredEmail(email);
 
-        final String encodedPassword = passwordEncoder.encode(rawPassword);
+        final String encodedPassword = passwordEncoder.encode(request.getPassword());
         final User user = userMapper.toUser(request, encodedPassword, role);
 
-        final Profile profile = profileMapper.apply(request, user);
+        @SuppressWarnings("unchecked")
+        ProfileMapper<T, ?, ?> profileMapper = (ProfileMapper<T, ?, ?>) role.getProfileMapper();
+
+        final Profile profile = profileMapper.toProfile(request, user);
         user.setProfile(profile);
         profile.setUser(user);
 

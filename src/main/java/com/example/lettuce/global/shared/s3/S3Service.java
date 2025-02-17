@@ -17,7 +17,7 @@ public class S3Service {
         return s3Uploader.uploadMultipartFileToBucket(CATEGORY_MEMBER, image);
     }
 
-    public UploadImageInfo uploadCarbonFootprintImage(MultipartFile image) {
-        return s3Uploader.uploadMultipartFileToBucket(CATEGORY_CARBON_FOOTPRINT, image);
+    public UploadImageInfo uploadCarbonFootprintImage(byte[] imageContent, String filename, String contentType) {
+        return s3Uploader.uploadBytesToBucket(CATEGORY_CARBON_FOOTPRINT, imageContent, filename, contentType);
     }
 }

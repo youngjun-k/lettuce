@@ -16,8 +16,11 @@ import org.springframework.web.multipart.MultipartFile;
 import com.example.lettuce.global.shared.exception.BaseException;
 import com.example.lettuce.global.shared.exception.code.ErrorCode;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class OpenAiService {
 
     private static final OpenAiChatOptions CHAT_OPTIONS = OpenAiChatOptions.builder()
@@ -40,6 +43,7 @@ public class OpenAiService {
 
             return chatModel.call(new Prompt(userMessage, CHAT_OPTIONS)).getResult().getOutput().getText().trim();
         } catch (Exception e) {
+            log.error("OpenAI API 호출 중 오류 발생", e);
             throw new BaseException(ErrorCode.OPENAI_ERROR);
         }
     }

@@ -80,6 +80,7 @@ public enum ErrorCode {
 
     // 503
     AUTHENTICATION_SERVICE_UNAVAILABLE(HttpStatus.SERVICE_UNAVAILABLE, "인증 서비스를 사용할 수 없습니다."),
+    IMAGE_PROCESSING_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "이미지 처리 오류가 발생했습니다."),
 
     ;
 

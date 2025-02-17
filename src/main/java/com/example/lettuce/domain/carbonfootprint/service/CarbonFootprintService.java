@@ -1,5 +1,7 @@
 package com.example.lettuce.domain.carbonfootprint.service;
 
+import java.io.IOException;
+
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationEventPublisher;
@@ -48,8 +50,13 @@ public class CarbonFootprintService {
         String response = openAiService.visionChat(PromptConstants.CARBON_FOOTPRINT_PROMPT, image);
         CarbonFootprintRewardResponse carbonFootprintRewardResponse = convertToCarbonFootprintRewardResponse(response);
 
-        eventPublisher.publishEvent(new CarbonFootprintImageEvent(this, carbonFootprintRewardResponse, user, image));
-
+        try {
+            eventPublisher.publishEvent(new CarbonFootprintImageEvent(this, carbonFootprintRewardResponse, user,
+                    image.getBytes(), image.getOriginalFilename(), image.getContentType()));
+        } catch (IOException e) {
+            throw new BaseException(ErrorCode.IMAGE_PROCESSING_ERROR);
+        }
+        
         return carbonFootprintRewardResponse;
     }
 

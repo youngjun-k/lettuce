@@ -11,7 +11,7 @@ spring:
       - optional:classpath:application-cloud.yml
 
   servlet:
-    multipart:
+    multipart:      
       max-file-size: 10MB
 
   ai:

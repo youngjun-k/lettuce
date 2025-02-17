@@ -45,7 +45,7 @@ public class SecurityConfig {
                         "/api/auth/login",
                         "/api/auth/register/**",
                         "/api/email/send/verify-email",
-                        "/api/email/send/reset-password",                        
+                        "/api/email/send/reset-password",
                         "/api/carbon-footprint/**",
         };
 

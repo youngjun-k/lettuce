@@ -1,7 +1,5 @@
 package com.example.lettuce.domain.carbonfootprint.service;
 
-import java.io.IOException;
-
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 
@@ -29,7 +27,8 @@ public class CarbonFootPrintEventListener implements ApplicationListener<CarbonF
     public void onApplicationEvent(CarbonFootprintImageEvent event) {
 
         try {
-            UploadImageInfo uploadImageInfo = s3Service.uploadCarbonFootprintImage(event.getImage());
+            UploadImageInfo uploadImageInfo = s3Service.uploadCarbonFootprintImage(event.getImageContent(),
+                    event.getFilename(), event.getContentType());
 
             CarbonFootPrintReward carbonFootPrint = carbonFootPrintMapper.toEntity(
                     event.getCarbonFootprintRewardResponse(),
@@ -38,12 +37,6 @@ public class CarbonFootPrintEventListener implements ApplicationListener<CarbonF
             carbonFootprintRewardRepository.save(carbonFootPrint);
         } catch (Exception e) {
             log.error("CarbonFootprintImageEvent 처리 중 오류 발생", e);
-        } finally {
-            try {
-                event.getImage().getInputStream().close();
-            } catch (IOException e) {
-                log.warn("CarbonFootprintImageEvent 처리 중 오류 발생", e);
-            }
         }
     }
 }

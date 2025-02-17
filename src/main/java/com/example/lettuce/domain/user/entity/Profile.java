@@ -26,15 +26,15 @@ public abstract class Profile {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JsonIgnore
-    private User user;
+    protected User user;
 
     @Column(name = "nickname", unique = true, length = 20, nullable = false, columnDefinition = "VARCHAR(20) COMMENT '회원 닉네임'")
     private String nickname;
 
-    @Column(name = "profile_image", length = 255, columnDefinition = "VARCHAR(255) COMMENT '회원 프로필 이미지 URL'")
-    private String profileImage;
+    @Column(name = "profile_image_url", length = 255, columnDefinition = "VARCHAR(255) COMMENT '회원 프로필 이미지 URL'")
+    private String profileImageUrl;
 
-    public void updateBaseProfile(UpdateUserProfileRequest profileRequest) {
+    public void updateBaseProfile(UpdateUserProfileRequest<?> profileRequest) {
         this.nickname = profileRequest.getNickname();
     }
 
@@ -42,7 +42,7 @@ public abstract class Profile {
         this.user = user;
     }
 
-    public void updateProfileImage(String profileImage) {
-        this.profileImage = profileImage;
+    public void updateProfileImage(String profileImageUrl) {
+        this.profileImageUrl = profileImageUrl;
     }
 }

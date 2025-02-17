@@ -6,6 +6,7 @@ import java.util.Set;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
+import com.example.lettuce.domain.user.entity.ClientProfile;
 import com.example.lettuce.domain.user.enums.FitnessGoal;
 import com.example.lettuce.global.framework.security.annotation.Age;
 
@@ -19,7 +20,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 
 @Getter
-public class UpdateClientProfileRequest extends UpdateUserProfileRequest {
+public class UpdateClientProfileRequest extends UpdateUserProfileRequest<ClientProfile> {
 
         @DateTimeFormat(pattern = "yyyy-MM-dd")
         @Age(min = 14, message = "14세 이상만 가입이 가능합니다.")
