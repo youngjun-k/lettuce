@@ -25,9 +25,8 @@ public class CachingConfig {
         SimpleCacheManager cacheManager = new SimpleCacheManager();
         cacheManager.setCaches(
                 List.of(
-                        new ConcurrentMapCache("user_id"),
                         new ConcurrentMapCache("user_email"),
-                        new ConcurrentMapCache("profile"),                        
+                        new ConcurrentMapCache("profile"),
                         new ConcurrentMapCache("carbon_footprint_product_by_product_id"),
                         new ConcurrentMapCache("carbon_footprint_product_by_product_name")));
         return cacheManager;

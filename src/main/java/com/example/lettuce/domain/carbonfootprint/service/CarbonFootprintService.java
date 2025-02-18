@@ -78,25 +78,28 @@ public class CarbonFootprintService {
      *         carbon footprint
      */
     @Cacheable(value = "carbon_footprint_product_by_product_id", key = "#url.split('/')[4]")
-    public CarbonFootprintProductResponse calculateFootprintByUrl(String url) {
+    public CarbonFootprintProductResponse calculateFootprintByUrl(String url, User user) {
         CarbonFootprintProductResponse response = carbonFootprintProductRepository.findByUrl(url);
 
         eventPublisher
                 .publishEvent(new CarbonFootprintProductEvent(this,
-                        Collections.singletonList(CarbonFootPrintProduct.of(response))));
+                        Collections.singletonList(CarbonFootPrintProduct.of(user.getId(), response))));
         return response;
     }
 
     @Cacheable(value = "carbon_footprint_product_by_product_name", key = "#name")
-    public Page<CarbonFootprintProductResponse> calculateFootprintByName(String name, Pageable pageable) {
-        Page<CarbonFootprintProductResponse> response = carbonFootprintProductRepository.findByName(name, pageable);
+    public Page<CarbonFootprintProductResponse> calculateFootprintByName(String name, Pageable pageable, User user) {
+        Page<CarbonFootprintProductResponse> responses = carbonFootprintProductRepository.findByName(name, pageable);
 
-        List<CarbonFootPrintProduct> carbonFootprintProducts = response.stream()
-                .map(CarbonFootPrintProduct::of)
+        if (responses.isEmpty()) {
+            return Page.empty();
+        }
+        List<CarbonFootPrintProduct> carbonFootprintProducts = responses.stream()
+                .map(res -> CarbonFootPrintProduct.of(user.getId(), res))
                 .collect(Collectors.toList());
 
         eventPublisher.publishEvent(new CarbonFootprintProductEvent(this, carbonFootprintProducts));
-        return response;
+        return responses;
     }
 
     private CarbonFootprintRewardResponse convertToCarbonFootprintRewardResponse(String response) {

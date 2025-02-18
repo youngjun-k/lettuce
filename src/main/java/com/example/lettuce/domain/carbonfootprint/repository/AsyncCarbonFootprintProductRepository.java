@@ -13,6 +13,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import com.example.lettuce.domain.carbonfootprint.service.CarbonFootPrintProduct;
+import com.example.lettuce.global.shared.exception.BaseException;
+import com.example.lettuce.global.shared.exception.code.ErrorCode;
 
 import org.springframework.jdbc.core.RowMapper;
 
@@ -27,7 +29,7 @@ public class AsyncCarbonFootprintProductRepository {
     private final JdbcTemplate jdbcTemplate;
 
     private final RowMapper<CarbonFootPrintProduct> carbonFootPrintProductRowMapper = (rs, rowNum) -> {
-        return CarbonFootPrintProduct.of(rs.getString("name"), rs.getString("product_url"),
+        return CarbonFootPrintProduct.of(rs.getLong("user_id"), rs.getString("name"), rs.getString("product_url"),
                 rs.getString("thumbnail_image_url"), rs.getBigDecimal("carbon_footprint"));
     };
 
@@ -37,19 +39,18 @@ public class AsyncCarbonFootprintProductRepository {
         asyncMultiProcessor.init(this::saveAll);
     }
 
-    private Optional<CarbonFootPrintProduct> findByProductByName(String productName) {
+    private Optional<CarbonFootPrintProduct> findByProductByUserId(Long userId) {
 
-        String sql = "SELECT * FROM carbon_footprint_products WHERE product_url = ?";
+        String sql = "SELECT * FROM carbon_footprint_products WHERE user_id = ?";
         try {
             return Optional.ofNullable(
                     jdbcTemplate.queryForObject(
                             sql,
                             carbonFootPrintProductRowMapper,
-                            productName));
+                            userId));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
-
     }
 
     private void saveAll(List<CarbonFootPrintProduct> carbonFootPrintProducts) {
@@ -57,25 +58,32 @@ public class AsyncCarbonFootprintProductRepository {
             return;
         }
 
-        StringBuilder sql = new StringBuilder(
-                "INSERT INTO carbon_footprint_products (name, product_url, thumbnail_image_url, carbon_footprint) VALUES ");
+        try {
+            StringBuilder sql = new StringBuilder(
+                    "INSERT INTO carbon_footprint_products (user_id, name, product_url, thumbnail_image_url, carbon_footprint) VALUES ");
 
-        for (int i = 0; i < carbonFootPrintProducts.size(); i++) {
-            sql.append("(?, ?, ?, ?)");
-            if (i < carbonFootPrintProducts.size() - 1) { // 마지막 요소가 아닌 경우에만 콤마 추가
-                sql.append(", ");
+            for (int i = 0; i < carbonFootPrintProducts.size(); i++) {
+                sql.append("(?, ?, ?, ?, ?)");
+                // Add comma except for the last element
+                if (i < carbonFootPrintProducts.size() - 1) {
+                    sql.append(", ");
+                }
             }
+
+            jdbcTemplate.update(sql.toString(), ps -> {
+                int paramIndex = 1;
+                for (CarbonFootPrintProduct carbonFootPrintProduct : carbonFootPrintProducts) {
+                    ps.setLong(paramIndex++, carbonFootPrintProduct.getUserId());
+                    ps.setString(paramIndex++, carbonFootPrintProduct.getName());
+                    ps.setString(paramIndex++, carbonFootPrintProduct.getProductUrl());
+                    ps.setString(paramIndex++, carbonFootPrintProduct.getThumbnailImageUrl());
+                    ps.setBigDecimal(paramIndex++, carbonFootPrintProduct.getCarbonFootprint());
+                }
+            });
+        } catch (Exception e) {
+            log.error("Error saving carbon footprint products: {}", e.getMessage());
+            throw new BaseException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
-
-        jdbcTemplate.update(sql.toString(), ps -> {
-            int paramIndex = 1;
-            for (CarbonFootPrintProduct carbonFootPrintProduct : carbonFootPrintProducts) {
-                ps.setString(paramIndex++, carbonFootPrintProduct.getName());
-                ps.setString(paramIndex++, carbonFootPrintProduct.getProductUrl());
-                ps.setString(paramIndex++, carbonFootPrintProduct.getThumbnailImageUrl());
-                ps.setBigDecimal(paramIndex++, carbonFootPrintProduct.getCarbonFootprint());
-            }
-        });
 
     }
 }

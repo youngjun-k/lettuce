@@ -15,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-@CacheConfig(cacheNames = { "user_email", "user_id" })
+@CacheConfig(cacheNames = { "user_email" })
 public class UserService {
     private final UserRepository userRepository;
 
@@ -44,17 +44,7 @@ public class UserService {
         userRepository.save(user);
     }
 
-    /**
-     * 
-     * @param id
-     * @return User
-     * @throws BaseException if the user is not found
-     */
-    @Cacheable(value = "user_id", key = "#p0")
-    public User findByUserId(Long id) {
-        return userRepository.findById(id)
-                .orElseThrow(() -> new BaseException(ErrorCode.NOT_FOUND_USER));
-    }
+
 
     /**
      * 
