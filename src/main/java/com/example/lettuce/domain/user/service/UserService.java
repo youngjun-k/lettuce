@@ -18,7 +18,7 @@ import lombok.RequiredArgsConstructor;
 @CacheConfig(cacheNames = { "user_email", "user_id" })
 public class UserService {
     private final UserRepository userRepository;
-    
+
     /**
      * @param email
      * @return User
@@ -26,8 +26,6 @@ public class UserService {
      */
     @Cacheable(value = "user_email", key = "#p0")
     public User findByEmail(String email) {
-        return userRepository.findByEmailAndDeletedAtIsNull(email)
-                .orElseThrow(() -> new BaseException(ErrorCode.NOT_FOUND_USER));
         return userRepository.findByEmailAndDeletedAtIsNull(email)
                 .orElseThrow(() -> new BaseException(ErrorCode.NOT_FOUND_USER));
     }
