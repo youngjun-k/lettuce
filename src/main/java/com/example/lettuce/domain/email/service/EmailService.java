@@ -39,7 +39,7 @@ public class EmailService {
     }
 
     public void sendVerifyEmail(EmailVerifyRequest request) {
-        userService.validateEmail(request.email());
+        userService.validateEmailNotVerified(request.email());
         sendEmail(request.email(),
                 EmailConstants.VERIFY_EMAIL_SUBJECT,
                 EmailConstants.VERIFY_EMAIL_HTML,

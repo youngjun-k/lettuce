@@ -27,20 +27,14 @@ public class UserService {
      */
     @Cacheable(value = "user_email", key = "#p0")
     public User findByEmail(String email) {
-        User user = userRepository.findByEmailAndDeletedAtIsNull(email);
-        if (user == null) {
-            throw new BaseException(ErrorCode.NOT_FOUND_USER);
-        }
-        return user;
+        return userRepository.findByEmailAndDeletedAtIsNull(email)
+                .orElseThrow(() -> new BaseException(ErrorCode.NOT_FOUND_USER));
     }
 
     @Cacheable(value = "user_email", key = "#p0")
     public User findByEmailWithProfiles(String email) {
-        User user = userRepository.findByEmailAndDeletedAtIsNullWithProfiles(email);
-        if (user == null) {
-            throw new BaseException(ErrorCode.NOT_FOUND_USER);
-        }
-        return user;
+        return userRepository.findByEmailAndDeletedAtIsNullWithProfiles(email)
+                .orElseThrow(() -> new BaseException(ErrorCode.NOT_FOUND_USER));
     }
 
     /**
@@ -70,7 +64,7 @@ public class UserService {
     /**
      * 
      * @param email
-     * @throws BaseException if the email is not registered
+     * @throws BaseException if the email is not verified
      */
     @Cacheable(value = "user_email", key = "#p0")
     public void validateEmail(String email) {
@@ -82,9 +76,18 @@ public class UserService {
 
     /**
      * 
-     * @param user
+     * @param email
+     * @throws BaseException if the email is not verified
      */
-    @CacheEvict(value = { "user_email", "user_id" }, key = "#p0.email")
+    @Cacheable(value = "user_email", key = "#p0")
+    public void validateEmailNotVerified(String email) {
+        User user = findByEmail(email);
+        if (user.isVerified()) {
+            throw new BaseException(ErrorCode.EMAIL_ALREADY_VERIFIED);
+        }
+    }
+
+    @CacheEvict(value = { "user_email", "user_id" }, key = "{#user.email, #user.id}")
     public void saveUser(User user) {
         userRepository.save(user);
     }

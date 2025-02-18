@@ -1,6 +1,6 @@
 package com.example.lettuce.domain.auth.dto.request;
 
-import com.example.lettuce.global.framework.security.validator.ValidPassword;
+import com.example.lettuce.global.framework.security.annotation.ValidPassword;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

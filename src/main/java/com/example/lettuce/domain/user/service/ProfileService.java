@@ -29,12 +29,13 @@ public class ProfileService {
         this.userRepository = userRepository;
     }
 
-    @Cacheable(value = "profile", key = "#user.id")
+    @Cacheable(value = "profile", key = "#user.email")
     public ProfileResponse getProfile(User user) {
         Profile profile = user.getProfile();
 
         @SuppressWarnings("unchecked")
-        ProfileMapper<?, Profile, ?> mapper = (ProfileMapper<?, Profile, ?>) user.getRole().getProfileMapper();
+        ProfileMapper<?, Profile, ?> mapper = (ProfileMapper<?, Profile, ?>) ProfileMapperFactory
+                .getProfileMapper(user.getRole());
 
         return new ProfileResponse(
                 mapper.toProfileInfo(user, profile),
@@ -42,15 +43,14 @@ public class ProfileService {
     }
 
     @Transactional
-    @CacheEvict(value = "profile", key = "#user.id")
+    @CacheEvict(value = "profile", key = "#user.email")
     public <T extends Profile> void updateProfile(User user, UpdateUserProfileRequest<T> profileRequest,
             MultipartFile profileImage) {
 
-        final Profile profile = user.getProfile();
+        Profile profile = user.getProfile();
 
-        ProfileUpdateStrategy strategy = user.getRole().getProfileUpdateStrategy();
+        ProfileStrategy strategy = ProfileMapperFactory.getProfileStrategy(user.getRole());
 
-        strategy.validateRequest(profileRequest);
         strategy.updateProfile(profile, profileRequest);
 
         if (profileImage != null) {
