@@ -28,6 +28,8 @@ public class UserService {
     public User findByEmail(String email) {
         return userRepository.findByEmailAndDeletedAtIsNull(email)
                 .orElseThrow(() -> new BaseException(ErrorCode.NOT_FOUND_USER));
+        return userRepository.findByEmailAndDeletedAtIsNull(email)
+                .orElseThrow(() -> new BaseException(ErrorCode.NOT_FOUND_USER));
     }
 
     @Cacheable(value = "user_email", key = "#p0")
@@ -71,6 +73,7 @@ public class UserService {
     /**
      * 
      * @param email
+     * @throws BaseException if the email is not verified
      * @throws BaseException if the email is not verified
      */
     @Cacheable(value = "user_email", key = "#p0")
