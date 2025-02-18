@@ -79,7 +79,6 @@ public class User extends BaseTime {
             default -> throw new IllegalArgumentException("Invalid user role: " + this.role);
         };
     }
-    
 
     public void setProfile(Profile profile) {
         switch (this.role) {

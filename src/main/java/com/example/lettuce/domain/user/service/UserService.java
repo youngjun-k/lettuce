@@ -18,9 +18,8 @@ import lombok.RequiredArgsConstructor;
 @CacheConfig(cacheNames = { "user_email", "user_id" })
 public class UserService {
     private final UserRepository userRepository;
-
+    
     /**
-     * 
      * @param email
      * @return User
      * @throws BaseException if the user is not found
@@ -35,6 +34,14 @@ public class UserService {
     public User findByEmailWithProfiles(String email) {
         return userRepository.findByEmailAndDeletedAtIsNullWithProfiles(email)
                 .orElseThrow(() -> new BaseException(ErrorCode.NOT_FOUND_USER));
+    }
+
+    /**
+     * @param user Need to evict the cache after saving the user
+     */
+    @CacheEvict(value = "user_email", key = "#user.email")
+    public void saveUser(User user) {
+        userRepository.save(user);
     }
 
     /**
@@ -87,8 +94,4 @@ public class UserService {
         }
     }
 
-    @CacheEvict(value = { "user_email", "user_id" }, key = "{#user.email, #user.id}")
-    public void saveUser(User user) {
-        userRepository.save(user);
-    }
 }
