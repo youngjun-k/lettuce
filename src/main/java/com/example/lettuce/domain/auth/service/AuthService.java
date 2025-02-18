@@ -102,7 +102,7 @@ public class AuthService {
     }
 
     @Transactional
-    @CacheEvict(value = { "user_email" }, key = "#request.email")
+    @CacheEvict(value = "user_email", key = "#request.email")
     public void resetPassword(String token, ResetPasswordRequest request) {
         final String email = jwtTokenProvider.getEmailByToken(token);
         final User user = userService.findByEmail(email);
@@ -119,7 +119,7 @@ public class AuthService {
                 AuthConstants.TOKEN_EXPIRES_IN_SECONDS));
     }
 
-    @CacheEvict(value = { "profile", "user_email", "user_id" }, key = "{#user.id, #user.email}")
+    @CacheEvict(value = { "user_email", "profile" }, key = "#user.email")
     public void deleteAccount(User user, DeleteAccountRequest request) {
         validatePassword(request.password(), user.getPassword());
 

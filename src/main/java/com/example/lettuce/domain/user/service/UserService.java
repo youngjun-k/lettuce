@@ -64,7 +64,7 @@ public class UserService {
     /**
      * 
      * @param email
-     * @throws BaseException if the email is verified
+     * @throws BaseException if the email is not verified
      */
     @Cacheable(value = "user_email", key = "#p0")
     public void validateEmail(String email) {

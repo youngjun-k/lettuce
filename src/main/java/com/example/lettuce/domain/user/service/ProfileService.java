@@ -1,7 +1,6 @@
 package com.example.lettuce.domain.user.service;
 
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,7 +29,7 @@ public class ProfileService {
         this.userRepository = userRepository;
     }
 
-    @Cacheable(value = "profile", key = "#user.id")
+    @Cacheable(value = "profile", key = "#user.email")
     public ProfileResponse getProfile(User user) {
         Profile profile = user.getProfile();
 
@@ -44,7 +43,7 @@ public class ProfileService {
     }
 
     @Transactional
-    @CacheEvict(value = "profile", key = "#user.id")
+    @CacheEvict(value = "profile", key = "#user.email")
     public <T extends Profile> void updateProfile(User user, UpdateUserProfileRequest<T> profileRequest,
             MultipartFile profileImage) {
 
@@ -52,7 +51,6 @@ public class ProfileService {
 
         ProfileStrategy strategy = ProfileMapperFactory.getProfileStrategy(user.getRole());
 
-        strategy.validateRequest(profileRequest);
         strategy.updateProfile(profile, profileRequest);
 
         if (profileImage != null) {

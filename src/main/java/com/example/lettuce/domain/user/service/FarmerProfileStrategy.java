@@ -16,6 +16,9 @@ public class FarmerProfileStrategy implements ProfileStrategy {
 
     @Override
     public void updateProfile(Profile profile, UpdateUserProfileRequest<?> request) {
+
+        validateRequest(request);
+
         UpdateFarmerProfileRequest farmerRequest = (UpdateFarmerProfileRequest) request;
         FarmerProfile farmerProfile = (FarmerProfile) profile;
         farmerProfile.updateProfile(farmerRequest);

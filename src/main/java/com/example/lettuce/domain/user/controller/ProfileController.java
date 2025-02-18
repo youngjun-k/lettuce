@@ -12,7 +12,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.example.lettuce.domain.user.dto.request.UpdateClientProfileRequest;
 import com.example.lettuce.domain.user.dto.request.UpdateFarmerProfileRequest;
 import com.example.lettuce.domain.user.dto.request.UpdatePartnerProfileRequest;
-import com.example.lettuce.domain.user.dto.request.UpdateUserProfileRequest;
 import com.example.lettuce.domain.user.dto.response.ProfileResponse;
 import com.example.lettuce.domain.user.entity.User;
 import com.example.lettuce.domain.user.service.ProfileService;

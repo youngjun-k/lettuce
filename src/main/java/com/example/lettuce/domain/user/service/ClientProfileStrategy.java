@@ -15,7 +15,11 @@ public class ClientProfileStrategy implements ProfileStrategy {
 
     @Override
     public void updateProfile(Profile profile, UpdateUserProfileRequest<?> request) {
+
+        validateRequest(request);
+
         UpdateClientProfileRequest clientRequest = (UpdateClientProfileRequest) request;
+
         ClientProfile clientProfile = (ClientProfile) profile;
         clientProfile.updateProfile(clientRequest);
     }

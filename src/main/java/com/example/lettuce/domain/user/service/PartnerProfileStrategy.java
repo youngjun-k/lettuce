@@ -16,6 +16,9 @@ public class PartnerProfileStrategy implements ProfileStrategy {
 
     @Override
     public void updateProfile(Profile profile, UpdateUserProfileRequest<?> request) {
+
+        validateRequest(request);
+
         UpdatePartnerProfileRequest partnerRequest = (UpdatePartnerProfileRequest) request;
         PartnerProfile partnerProfile = (PartnerProfile) profile;
         partnerProfile.updateProfile(partnerRequest);
