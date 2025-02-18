@@ -16,7 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class CarbonFootPrintEventListener implements ApplicationListener<CarbonFootprintImageEvent> {
+public class CarbonFootPrintImageEventListener implements ApplicationListener<CarbonFootprintImageEvent> {
 
     private final CarbonFootPrintMapper carbonFootPrintMapper;
     private final CarbonFootprintRewardRepository carbonFootprintRewardRepository;

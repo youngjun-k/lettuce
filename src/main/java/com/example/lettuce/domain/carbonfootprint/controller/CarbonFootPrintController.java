@@ -34,7 +34,7 @@ public class CarbonFootPrintController {
     private final CarbonFootprintService carbonFootprintService;
 
     @PostMapping
-    public ResponseEntity<CommonResponse<CarbonFootprintRewardResponse>> calculateFootprintByImage(
+    public ResponseEntity<CommonResponse<CarbonFootprintRewardResponse>> calculateFootprintByImage(        
             @RequestPart(name = "image", required = true) @Valid MultipartFile image,
             @LoginUser User user) {
         return CommonResponse.success(SuccessCode.SUCCESS,
@@ -43,18 +43,20 @@ public class CarbonFootPrintController {
 
     @GetMapping
     public ResponseEntity<CommonResponse<CarbonFootprintProductResponse>> calculateFootprintByUrl(
-            @RequestParam(required = true) @URL(message = "유효하지 않은 URL입니다.") String url) {
+            @RequestParam(required = true) @URL(message = "유효하지 않은 URL입니다.") String url,
+            @LoginUser User user) {
         return CommonResponse.success(SuccessCode.SUCCESS,
-                carbonFootprintService.calculateFootprintByUrl(url));
+                carbonFootprintService.calculateFootprintByUrl(url, user));
     }
 
     @GetMapping(value = "/product/{productName}", params = { "page", "size" })
     public ResponseEntity<CommonResponse<Page<CarbonFootprintProductResponse>>> calculateFootprintByProductName(
             @PathVariable String productName,
             @RequestParam(defaultValue = "1") @Min(value = 1) int page,
-            @RequestParam(defaultValue = "10") @Min(value = 10) @Max(value = 100) int size) {
+            @RequestParam(defaultValue = "10") @Min(value = 10) @Max(value = 100) int size,
+            @LoginUser User user) {
         return CommonResponse.success(SuccessCode.SUCCESS,
-                carbonFootprintService.calculateFootprintByName(productName, PageRequest.of(page - 1, size)));
+                carbonFootprintService.calculateFootprintByName(productName, PageRequest.of(page - 1, size), user));
     }
 
 }

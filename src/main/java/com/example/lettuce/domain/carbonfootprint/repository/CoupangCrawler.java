@@ -33,12 +33,12 @@ import org.jsoup.select.Elements;
 public class CoupangCrawler implements CarbonFootprintProductRepository {
 
     private final OpenAiService openAiService;
-    private final CoupangProperties coupangProperties;
+    private final CoupangProperties coupangProperties;    
 
     private static final String DECIMAL_SEPARATE_BY_COMMA_REGEX = "\\d+\\.\\d+(?:,\\s*\\d+\\.\\d+)*";
     private static final String USER_AGENT = "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Mobile Safari/537.36";
     private static final String ACCEPT_LANGUAGE = "en-US,en;q=0.9";
-    private static final String HTTPS_PREFIX = "https:";
+    private static final String HTTPS_PREFIX = "https:";    
 
     @Override
     public CarbonFootprintProductResponse findByUrl(String url) {
@@ -49,9 +49,9 @@ public class CoupangCrawler implements CarbonFootprintProductRepository {
 
         String title = bodyElement.selectFirst("h1.ProductInfo_title__fLscZ").text();
         String thumbnailUrl = bodyElement.selectFirst("#MWEB_PRODUCT_DETAIL_ITEM_THUMBNAILS img").attr("src");
-        String carbonFootprint = getCarbonFootprint(title);
+        BigDecimal carbonFootprint = getCarbonFootprint(title);        
 
-        return new CarbonFootprintProductResponse(title, url, thumbnailUrl, new BigDecimal(carbonFootprint));
+        return new CarbonFootprintProductResponse(title, url, thumbnailUrl, carbonFootprint);
     }
 
     @Override
@@ -101,9 +101,9 @@ public class CoupangCrawler implements CarbonFootprintProductRepository {
         return imageUrl.startsWith("//") ? HTTPS_PREFIX + imageUrl : imageUrl;
     }
 
-    private String getCarbonFootprint(String productName) {
-        return openAiService.textChat(
-                PromptConstants.CARBON_FOOTPRINT_BY_TEXT_PROMPT.replace("{productName}", productName));
+    private BigDecimal getCarbonFootprint(String productName) {
+        return new BigDecimal(openAiService.textChat(
+                PromptConstants.CARBON_FOOTPRINT_BY_TEXT_PROMPT.replace("{productName}", productName)));
     }
 
     private List<BigDecimal> getCarbonFootprintList(String productNames) {
