@@ -5,7 +5,7 @@ import com.example.lettuce.domain.user.dto.request.UpdateUserProfileRequest;
 import com.example.lettuce.domain.user.entity.PartnerProfile;
 import com.example.lettuce.domain.user.entity.Profile;
 
-public class PartnerProfileUpdateStrategy implements ProfileUpdateStrategy {
+public class PartnerProfileStrategy implements ProfileStrategy {
 
     @Override
     public void validateRequest(UpdateUserProfileRequest<?> request) {
@@ -20,5 +20,4 @@ public class PartnerProfileUpdateStrategy implements ProfileUpdateStrategy {
         PartnerProfile partnerProfile = (PartnerProfile) profile;
         partnerProfile.updateProfile(partnerRequest);
     }
-
 }

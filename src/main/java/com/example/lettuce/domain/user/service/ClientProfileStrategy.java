@@ -5,7 +5,7 @@ import com.example.lettuce.domain.user.dto.request.UpdateUserProfileRequest;
 import com.example.lettuce.domain.user.entity.ClientProfile;
 import com.example.lettuce.domain.user.entity.Profile;
 
-public class ClientProfileUpdateStrategy implements ProfileUpdateStrategy {
+public class ClientProfileStrategy implements ProfileStrategy {
     @Override
     public void validateRequest(UpdateUserProfileRequest<?> request) {
         if (!(request instanceof UpdateClientProfileRequest)) {

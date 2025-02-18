@@ -17,9 +17,11 @@ import lombok.extern.slf4j.Slf4j;
 public class AsynchronousSpringEventsConfig {
 
     /**
-     * Creates and configures an ApplicationEventMulticaster bean for asynchronous event handling.
+     * Creates and configures an ApplicationEventMulticaster bean for asynchronous
+     * event handling.
      * 
-     * @return Configured SimpleApplicationEventMulticaster with thread pool executor
+     * @return Configured SimpleApplicationEventMulticaster with thread pool
+     *         executor
      *         - Core pool size: 10 threads
      *         - Max pool size: 20 threads
      *         - Queue capacity: 50 tasks

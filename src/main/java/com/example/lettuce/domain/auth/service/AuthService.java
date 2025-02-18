@@ -1,9 +1,9 @@
 package com.example.lettuce.domain.auth.service;
 
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +19,7 @@ import com.example.lettuce.domain.user.dto.UserInfo;
 import com.example.lettuce.domain.user.entity.Profile;
 import com.example.lettuce.domain.user.entity.User;
 import com.example.lettuce.domain.user.enums.UserRole;
+import com.example.lettuce.domain.user.service.ProfileMapperFactory;
 import com.example.lettuce.domain.user.service.UserService;
 import com.example.lettuce.global.framework.security.provider.JwtTokenProvider;
 import com.example.lettuce.global.shared.constant.AuthConstants;
@@ -62,7 +63,6 @@ public class AuthService {
      * @return AuthResponse containing user info and token.
      */
     @Transactional
-    @CacheEvict(value = "user_email", key = "#p0.email")
     public <T extends CreateUserRequest> void registerUser(T request, UserRole role) {
         final String email = request.getEmail();
         userService.isNotRegisteredEmail(email);
@@ -71,7 +71,8 @@ public class AuthService {
         final User user = userMapper.toUser(request, encodedPassword, role);
 
         @SuppressWarnings("unchecked")
-        ProfileMapper<T, ?, ?> profileMapper = (ProfileMapper<T, ?, ?>) role.getProfileMapper();
+        ProfileMapper<T, ?, ?> profileMapper = (ProfileMapper<T, ?, ?>) ProfileMapperFactory
+                .getProfileMapper(role);
 
         final Profile profile = profileMapper.toProfile(request, user);
         user.setProfile(profile);
@@ -100,6 +101,8 @@ public class AuthService {
         return createAuthResponse(user);
     }
 
+    @Transactional
+    @CacheEvict(value = { "user_email" }, key = "#request.email")
     public void resetPassword(String token, ResetPasswordRequest request) {
         final String email = jwtTokenProvider.getEmailByToken(token);
         final User user = userService.findByEmail(email);
@@ -116,6 +119,7 @@ public class AuthService {
                 AuthConstants.TOKEN_EXPIRES_IN_SECONDS));
     }
 
+    @CacheEvict(value = { "profile", "user_email", "user_id" }, key = "{#user.id, #user.email}")
     public void deleteAccount(User user, DeleteAccountRequest request) {
         validatePassword(request.password(), user.getPassword());
 

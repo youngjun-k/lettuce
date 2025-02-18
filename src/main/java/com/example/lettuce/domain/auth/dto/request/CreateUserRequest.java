@@ -1,7 +1,7 @@
 package com.example.lettuce.domain.auth.dto.request;
 
 import com.example.lettuce.global.framework.security.annotation.ValidNickname;
-import com.example.lettuce.global.framework.security.validator.ValidPassword;
+import com.example.lettuce.global.framework.security.annotation.ValidPassword;
 
 import io.micrometer.common.lang.Nullable;
 import jakarta.validation.constraints.Email;

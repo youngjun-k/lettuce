@@ -3,6 +3,10 @@ package com.example.lettuce.domain.user.entity;
 import java.time.LocalDateTime;
 
 import com.example.lettuce.domain.user.enums.UserRole;
+import com.example.lettuce.domain.user.service.ClientProfileStrategy;
+import com.example.lettuce.domain.user.service.FarmerProfileStrategy;
+import com.example.lettuce.domain.user.service.PartnerProfileStrategy;
+import com.example.lettuce.domain.user.service.ProfileStrategy;
 import com.example.lettuce.global.shared.entity.BaseTime;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -75,6 +79,7 @@ public class User extends BaseTime {
             default -> throw new IllegalArgumentException("Invalid user role: " + this.role);
         };
     }
+    
 
     public void setProfile(Profile profile) {
         switch (this.role) {

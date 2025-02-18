@@ -1,9 +1,11 @@
-package com.example.lettuce.global.framework.security.validator;
+package com.example.lettuce.global.framework.security.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+
+import com.example.lettuce.global.framework.security.validator.PasswordValidator;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;

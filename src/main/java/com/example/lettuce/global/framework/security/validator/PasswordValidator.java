@@ -1,5 +1,7 @@
 package com.example.lettuce.global.framework.security.validator;
 
+import com.example.lettuce.global.framework.security.annotation.ValidPassword;
+
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 

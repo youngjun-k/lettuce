@@ -1,6 +1,7 @@
 package com.example.lettuce.domain.user.service;
 
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,7 +35,8 @@ public class ProfileService {
         Profile profile = user.getProfile();
 
         @SuppressWarnings("unchecked")
-        ProfileMapper<?, Profile, ?> mapper = (ProfileMapper<?, Profile, ?>) user.getRole().getProfileMapper();
+        ProfileMapper<?, Profile, ?> mapper = (ProfileMapper<?, Profile, ?>) ProfileMapperFactory
+                .getProfileMapper(user.getRole());
 
         return new ProfileResponse(
                 mapper.toProfileInfo(user, profile),
@@ -46,9 +48,9 @@ public class ProfileService {
     public <T extends Profile> void updateProfile(User user, UpdateUserProfileRequest<T> profileRequest,
             MultipartFile profileImage) {
 
-        final Profile profile = user.getProfile();
+        Profile profile = user.getProfile();
 
-        ProfileUpdateStrategy strategy = user.getRole().getProfileUpdateStrategy();
+        ProfileStrategy strategy = ProfileMapperFactory.getProfileStrategy(user.getRole());
 
         strategy.validateRequest(profileRequest);
         strategy.updateProfile(profile, profileRequest);
