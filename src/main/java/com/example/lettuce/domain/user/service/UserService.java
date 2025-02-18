@@ -28,14 +28,10 @@ public class UserService {
     public User findByEmail(String email) {
         return userRepository.findByEmailAndDeletedAtIsNull(email)
                 .orElseThrow(() -> new BaseException(ErrorCode.NOT_FOUND_USER));
-        return userRepository.findByEmailAndDeletedAtIsNull(email)
-                .orElseThrow(() -> new BaseException(ErrorCode.NOT_FOUND_USER));
     }
 
     @Cacheable(value = "user_email", key = "#p0")
     public User findByEmailWithProfiles(String email) {
-        return userRepository.findByEmailAndDeletedAtIsNullWithProfiles(email)
-                .orElseThrow(() -> new BaseException(ErrorCode.NOT_FOUND_USER));
         return userRepository.findByEmailAndDeletedAtIsNullWithProfiles(email)
                 .orElseThrow(() -> new BaseException(ErrorCode.NOT_FOUND_USER));
     }
@@ -47,8 +43,6 @@ public class UserService {
     public void saveUser(User user) {
         userRepository.save(user);
     }
-
-
 
     /**
      * 
@@ -65,7 +59,6 @@ public class UserService {
     /**
      * 
      * @param email
-     * @throws BaseException if the email is not verified
      * @throws BaseException if the email is not verified
      * @throws BaseException if the email is not verified
      */
@@ -90,8 +83,4 @@ public class UserService {
         }
     }
 
-    @CacheEvict(value = { "user_email", "user_id" }, key = "{#user.email, #user.id}")
-    public void saveUser(User user) {
-        userRepository.save(user);
-    }
 }
