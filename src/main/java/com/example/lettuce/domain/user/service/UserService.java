@@ -15,12 +15,11 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-@CacheConfig(cacheNames = { "user_email", "user_id" })
+@CacheConfig(cacheNames = { "user_email" })
 public class UserService {
     private final UserRepository userRepository;
 
     /**
-     * 
      * @param email
      * @return User
      * @throws BaseException if the user is not found
@@ -29,25 +28,27 @@ public class UserService {
     public User findByEmail(String email) {
         return userRepository.findByEmailAndDeletedAtIsNull(email)
                 .orElseThrow(() -> new BaseException(ErrorCode.NOT_FOUND_USER));
+        return userRepository.findByEmailAndDeletedAtIsNull(email)
+                .orElseThrow(() -> new BaseException(ErrorCode.NOT_FOUND_USER));
     }
 
     @Cacheable(value = "user_email", key = "#p0")
     public User findByEmailWithProfiles(String email) {
         return userRepository.findByEmailAndDeletedAtIsNullWithProfiles(email)
                 .orElseThrow(() -> new BaseException(ErrorCode.NOT_FOUND_USER));
+        return userRepository.findByEmailAndDeletedAtIsNullWithProfiles(email)
+                .orElseThrow(() -> new BaseException(ErrorCode.NOT_FOUND_USER));
     }
 
     /**
-     * 
-     * @param id
-     * @return User
-     * @throws BaseException if the user is not found
+     * @param user Need to evict the cache after saving the user
      */
-    @Cacheable(value = "user_id", key = "#p0")
-    public User findByUserId(Long id) {
-        return userRepository.findById(id)
-                .orElseThrow(() -> new BaseException(ErrorCode.NOT_FOUND_USER));
+    @CacheEvict(value = "user_email", key = "#user.email")
+    public void saveUser(User user) {
+        userRepository.save(user);
     }
+
+
 
     /**
      * 
@@ -64,6 +65,8 @@ public class UserService {
     /**
      * 
      * @param email
+     * @throws BaseException if the email is not verified
+     * @throws BaseException if the email is not verified
      * @throws BaseException if the email is not verified
      */
     @Cacheable(value = "user_email", key = "#p0")

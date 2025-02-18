@@ -15,3 +15,7 @@ spring:
         format-sql: ${DEV_DB_FORMAT_SQL}
         use-sql-comments: ${DEV_DB_USE_SQL_COMMENTS}
         dialect: ${DEV_DB_DIALECT}
+jdbc:
+  async:
+    timeout: 5000
+    bulk-size: 3000

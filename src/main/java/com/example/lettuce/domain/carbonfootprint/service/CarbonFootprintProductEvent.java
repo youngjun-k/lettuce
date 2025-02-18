@@ -1,18 +1,18 @@
 package com.example.lettuce.domain.carbonfootprint.service;
 
-import org.springframework.context.ApplicationEvent;
+import java.util.List;
 
-import com.example.lettuce.domain.carbonfootprint.dto.response.CarbonFootprintProductResponse;
+import org.springframework.context.ApplicationEvent;
 
 import lombok.Getter;
 
 @Getter
 public class CarbonFootprintProductEvent extends ApplicationEvent {
 
-    private final CarbonFootprintProductResponse carbonFootprintProduct;
+    private final List<CarbonFootPrintProduct> carbonFootprintProducts;
 
-    public CarbonFootprintProductEvent(Object source, CarbonFootprintProductResponse carbonFootprintProduct) {
+    public CarbonFootprintProductEvent(Object source, List<CarbonFootPrintProduct> carbonFootprintProducts) {
         super(source);
-        this.carbonFootprintProduct = carbonFootprintProduct;
+        this.carbonFootprintProducts = carbonFootprintProducts;
     }
 }
