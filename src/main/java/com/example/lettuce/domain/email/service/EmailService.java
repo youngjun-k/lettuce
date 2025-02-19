@@ -16,7 +16,6 @@ import java.util.Map;
 
 @Service
 public class EmailService {
-
     private final AsyncEmailSender asyncEmailSender;
     private final JwtTokenProvider jwtTokenProvider;
     private final UserService userService;
@@ -32,7 +31,7 @@ public class EmailService {
 
     @EventListener
     private void sendWelcomeEmail(UserRegistrationEvent event) {
-        sendEmail(event.getEmail(),
+        this.sendEmail(event.getEmail(),
                 EmailConstants.WELCOME_EMAIL_SUBJECT,
                 EmailConstants.WELCOME_EMAIL_HTML,
                 jwtTokenProvider.createEmailVerificationToken(event.getEmail()));
@@ -40,7 +39,7 @@ public class EmailService {
 
     public void sendVerifyEmail(EmailVerifyRequest request) {
         userService.validateEmailNotVerified(request.email());
-        sendEmail(request.email(),
+        this.sendEmail(request.email(),
                 EmailConstants.VERIFY_EMAIL_SUBJECT,
                 EmailConstants.VERIFY_EMAIL_HTML,
                 jwtTokenProvider.createEmailVerificationToken(request.email()));
@@ -48,7 +47,7 @@ public class EmailService {
 
     public void sendResetPasswordEmail(EmailResetPasswordRequest request) {
         userService.validateEmail(request.email());
-        sendEmail(request.email(),
+        this.sendEmail(request.email(),
                 EmailConstants.RESET_PASSWORD_EMAIL_SUBJECT,
                 EmailConstants.RESET_PASSWORD_EMAIL_HTML,
                 jwtTokenProvider.createResetPasswordToken(request.email()));

@@ -64,11 +64,11 @@ public class AuthService {
      */
     @Transactional
     public <T extends CreateUserRequest> void registerUser(T request, UserRole role) {
-        final String email = request.getEmail();
+        String email = request.getEmail();
         userService.isNotRegisteredEmail(email);
 
         final String encodedPassword = passwordEncoder.encode(request.getPassword());
-        final User user = userMapper.toUser(request, encodedPassword, role);
+        User user = userMapper.toUser(request, encodedPassword, role);
 
         @SuppressWarnings("unchecked")
         ProfileMapper<T, ?, ?> profileMapper = (ProfileMapper<T, ?, ?>) ProfileMapperFactory
