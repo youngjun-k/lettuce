@@ -24,6 +24,7 @@ public class CarbonFootprintProductResponse {
                 this.carbonFootprint = carbonFootprint;
         }
 
+
         public static CarbonFootprintProductResponse of(Long userId, String name, String productUrl,
                         String thumbnailImageUrl, BigDecimal carbonFootprint) {
                 CarbonFootprintProductResponse response = new CarbonFootprintProductResponse(name, productUrl,

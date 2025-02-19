@@ -31,6 +31,7 @@ public class AsyncCarbonFootprintProductRepository {
     private final JdbcTemplate jdbcTemplate;
 
     private final RowMapper<CarbonFootprintProductResponse> carbonFootPrintProductRowMapper = (rs, rowNum) -> {
+
         return CarbonFootprintProductResponse.of(
                 rs.getLong("user_id"),
                 rs.getString("name"),
