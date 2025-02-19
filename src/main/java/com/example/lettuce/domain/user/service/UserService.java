@@ -44,8 +44,6 @@ public class UserService {
         userRepository.save(user);
     }
 
-
-
     /**
      * 
      * @param email
@@ -66,7 +64,7 @@ public class UserService {
      */
     @Cacheable(value = "user_email", key = "#p0")
     public void validateEmail(String email) {
-        User user = findByEmail(email);
+        User user = this.findByEmail(email);
         if (!user.isVerified()) {
             throw new BaseException(ErrorCode.EMAIL_NOT_VERIFIED);
         }
@@ -79,7 +77,7 @@ public class UserService {
      */
     @Cacheable(value = "user_email", key = "#p0")
     public void validateEmailNotVerified(String email) {
-        User user = findByEmail(email);
+        User user = this.findByEmail(email);
         if (user.isVerified()) {
             throw new BaseException(ErrorCode.EMAIL_ALREADY_VERIFIED);
         }

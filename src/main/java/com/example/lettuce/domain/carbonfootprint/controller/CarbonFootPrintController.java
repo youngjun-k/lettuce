@@ -7,6 +7,9 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+
+import java.util.List;
+
 import org.hibernate.validator.constraints.URL;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -31,32 +34,40 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/carbon-footprint")
 public class CarbonFootPrintController {
 
-    private final CarbonFootprintService carbonFootprintService;
+        private final CarbonFootprintService carbonFootprintService;
 
-    @PostMapping
-    public ResponseEntity<CommonResponse<CarbonFootprintRewardResponse>> calculateFootprintByImage(        
-            @RequestPart(name = "image", required = true) @Valid MultipartFile image,
-            @LoginUser User user) {
-        return CommonResponse.success(SuccessCode.SUCCESS,
-                carbonFootprintService.calculateFootprintByImage(image, user));
-    }
+        @PostMapping
+        public ResponseEntity<CommonResponse<CarbonFootprintRewardResponse>> calculateFootprintByImage(
+                        @RequestPart(name = "image", required = true) @Valid MultipartFile image,
+                        @LoginUser User user) {
+                return CommonResponse.success(SuccessCode.SUCCESS,
+                                carbonFootprintService.calculateFootprintByImage(image, user));
+        }
 
-    @GetMapping
-    public ResponseEntity<CommonResponse<CarbonFootprintProductResponse>> calculateFootprintByUrl(
-            @RequestParam(required = true) @URL(message = "유효하지 않은 URL입니다.") String url,
-            @LoginUser User user) {
-        return CommonResponse.success(SuccessCode.SUCCESS,
-                carbonFootprintService.calculateFootprintByUrl(url, user));
-    }
+        @GetMapping
+        public ResponseEntity<CommonResponse<CarbonFootprintProductResponse>> calculateFootprintByUrl(
+                        @RequestParam(required = true) @URL(message = "유효하지 않은 URL입니다.") String url,
+                        @LoginUser User user) {
+                return CommonResponse.success(SuccessCode.SUCCESS,
+                                carbonFootprintService.calculateFootprintByUrl(url, user));
+        }
 
-    @GetMapping(value = "/product/{productName}", params = { "page", "size" })
-    public ResponseEntity<CommonResponse<Page<CarbonFootprintProductResponse>>> calculateFootprintByProductName(
-            @PathVariable String productName,
-            @RequestParam(defaultValue = "1") @Min(value = 1) int page,
-            @RequestParam(defaultValue = "10") @Min(value = 10) @Max(value = 100) int size,
-            @LoginUser User user) {
-        return CommonResponse.success(SuccessCode.SUCCESS,
-                carbonFootprintService.calculateFootprintByName(productName, PageRequest.of(page - 1, size), user));
-    }
+        @GetMapping(value = "/product/{productName}", params = { "page", "size" })
+        public ResponseEntity<CommonResponse<Page<CarbonFootprintProductResponse>>> calculateFootprintByProductName(
+                        @PathVariable String productName,
+                        @RequestParam(defaultValue = "1") @Min(value = 1) int page,
+                        @RequestParam(defaultValue = "10") @Min(value = 10) @Max(value = 100) int size,
+                        @LoginUser User user) {
+                return CommonResponse.success(SuccessCode.SUCCESS,
+                                carbonFootprintService.calculateFootprintByName(productName,
+                                                PageRequest.of(page - 1, size), user));
+        }
+
+        @GetMapping(value = "/my/product")
+        public ResponseEntity<CommonResponse<List<CarbonFootprintProductResponse>>> findFootprintByUserId(
+                        @LoginUser User user) {
+                return CommonResponse.success(SuccessCode.SUCCESS,
+                                carbonFootprintService.findFootprintByUserId(user.getId()));
+        }
 
 }

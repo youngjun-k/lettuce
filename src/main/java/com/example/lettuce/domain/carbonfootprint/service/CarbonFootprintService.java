@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.event.EventListener;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -16,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.example.lettuce.domain.carbonfootprint.dto.response.CarbonFootprintProductResponse;
 import com.example.lettuce.domain.carbonfootprint.dto.response.CarbonFootprintRewardResponse;
+import com.example.lettuce.domain.carbonfootprint.repository.AsyncCarbonFootprintProductRepository;
 import com.example.lettuce.domain.carbonfootprint.repository.CarbonFootprintProductRepository;
 import com.example.lettuce.domain.user.entity.User;
 import com.example.lettuce.global.shared.constant.PromptConstants;
@@ -38,6 +38,8 @@ public class CarbonFootprintService {
     private final CarbonFootprintProductRepository carbonFootprintProductRepository;
     private final OpenAiService openAiService;
     private final AsyncEventProducer<CarbonFootPrintProduct> asyncEventProducer;
+
+    private final AsyncCarbonFootprintProductRepository asyncCarbonFootprintProductRepository;
 
     /**
      * Calculate Carbon Footprint by Image.
@@ -81,9 +83,7 @@ public class CarbonFootprintService {
     public CarbonFootprintProductResponse calculateFootprintByUrl(String url, User user) {
         CarbonFootprintProductResponse response = carbonFootprintProductRepository.findByUrl(url);
 
-        eventPublisher
-                .publishEvent(new CarbonFootprintProductEvent(this,
-                        Collections.singletonList(CarbonFootPrintProduct.of(user.getId(), response))));
+        asyncEventProducer.produce(Collections.singletonList(CarbonFootPrintProduct.of(user.getId(), response)));
         return response;
     }
 
@@ -98,7 +98,14 @@ public class CarbonFootprintService {
                 .map(res -> CarbonFootPrintProduct.of(user.getId(), res))
                 .collect(Collectors.toList());
 
-        eventPublisher.publishEvent(new CarbonFootprintProductEvent(this, carbonFootprintProducts));
+        asyncEventProducer.produce(carbonFootprintProducts);
+        return responses;
+    }
+
+    public List<CarbonFootprintProductResponse> findFootprintByUserId(Long userId) {
+        List<CarbonFootprintProductResponse> responses = asyncCarbonFootprintProductRepository
+                .findByProductByUserId(userId);
+
         return responses;
     }
 
@@ -110,8 +117,4 @@ public class CarbonFootprintService {
         }
     }
 
-    @EventListener
-    public void onApplicationEvent(CarbonFootprintProductEvent event) {
-        asyncEventProducer.produce(event.getCarbonFootprintProducts());
-    }
 }

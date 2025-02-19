@@ -1,8 +1,9 @@
 package com.example.lettuce.domain.carbonfootprint.repository;
 
 import jakarta.annotation.PostConstruct;
+
+import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +13,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import com.example.lettuce.domain.carbonfootprint.dto.response.CarbonFootprintProductResponse;
 import com.example.lettuce.domain.carbonfootprint.service.CarbonFootPrintProduct;
 import com.example.lettuce.global.shared.exception.BaseException;
 import com.example.lettuce.global.shared.exception.code.ErrorCode;
@@ -28,9 +30,13 @@ public class AsyncCarbonFootprintProductRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    private final RowMapper<CarbonFootPrintProduct> carbonFootPrintProductRowMapper = (rs, rowNum) -> {
-        return CarbonFootPrintProduct.of(rs.getLong("user_id"), rs.getString("name"), rs.getString("product_url"),
-                rs.getString("thumbnail_image_url"), rs.getBigDecimal("carbon_footprint"));
+    private final RowMapper<CarbonFootprintProductResponse> carbonFootPrintProductRowMapper = (rs, rowNum) -> {
+        return CarbonFootprintProductResponse.of(
+                rs.getLong("user_id"),
+                rs.getString("name"),
+                rs.getString("product_url"),
+                rs.getString("thumbnail_image_url"),
+                rs.getBigDecimal("carbon_footprint"));
     };
 
     @PostConstruct
@@ -39,17 +45,13 @@ public class AsyncCarbonFootprintProductRepository {
         asyncMultiProcessor.init(this::saveAll);
     }
 
-    private Optional<CarbonFootPrintProduct> findByProductByUserId(Long userId) {
+    public List<CarbonFootprintProductResponse> findByProductByUserId(Long userId) {
 
         String sql = "SELECT * FROM carbon_footprint_products WHERE user_id = ?";
         try {
-            return Optional.ofNullable(
-                    jdbcTemplate.queryForObject(
-                            sql,
-                            carbonFootPrintProductRowMapper,
-                            userId));
+            return jdbcTemplate.query(sql, carbonFootPrintProductRowMapper, userId);
         } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
+            return Collections.emptyList();
         }
     }
 

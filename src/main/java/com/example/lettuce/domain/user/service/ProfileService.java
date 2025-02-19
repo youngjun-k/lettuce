@@ -45,7 +45,7 @@ public class ProfileService {
     @Transactional
     @CacheEvict(value = "profile", key = "#user.email")
     public <T extends Profile> void updateProfile(User user, UpdateUserProfileRequest<T> profileRequest,
-            MultipartFile profileImage) {
+            MultipartFile profileImage) {                
 
         Profile profile = user.getProfile();
 

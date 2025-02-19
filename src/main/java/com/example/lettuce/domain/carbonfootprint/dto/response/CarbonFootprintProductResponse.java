@@ -23,4 +23,12 @@ public class CarbonFootprintProductResponse {
         public void setCarbonFootprint(BigDecimal carbonFootprint) {
                 this.carbonFootprint = carbonFootprint;
         }
+
+        public static CarbonFootprintProductResponse of(Long userId, String name, String productUrl,
+                        String thumbnailImageUrl, BigDecimal carbonFootprint) {
+                CarbonFootprintProductResponse response = new CarbonFootprintProductResponse(name, productUrl,
+                                thumbnailImageUrl);
+                response.setCarbonFootprint(carbonFootprint);
+                return response;
+        }
 }
