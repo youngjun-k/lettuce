@@ -24,9 +24,11 @@ public class CarbonFootprintProductResponse {
                 this.carbonFootprint = carbonFootprint;
         }
 
-        public static CarbonFootprintProductResponse of(long long1, String string, String string2, String string3,
-                BigDecimal bigDecimal) {
-            // TODO Auto-generated method stub
-            throw new UnsupportedOperationException("Unimplemented method 'of'");
+        public static CarbonFootprintProductResponse of(Long userId, String name, String productUrl,
+                        String thumbnailImageUrl, BigDecimal carbonFootprint) {
+                CarbonFootprintProductResponse response = new CarbonFootprintProductResponse(name, productUrl,
+                                thumbnailImageUrl);
+                response.setCarbonFootprint(carbonFootprint);
+                return response;
         }
 }
