@@ -1,4 +1,4 @@
-package com.example.lettuce.global.shared.mapper;
+package com.example.lettuce.domain.user.mapper;
 
 import org.mapstruct.Mapper;
 import com.example.lettuce.domain.auth.dto.request.CreateClientRequest;

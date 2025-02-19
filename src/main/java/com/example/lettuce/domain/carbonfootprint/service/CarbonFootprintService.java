@@ -18,8 +18,8 @@ import com.example.lettuce.domain.carbonfootprint.dto.response.CarbonFootprintRe
 import com.example.lettuce.domain.carbonfootprint.repository.AsyncCarbonFootprintProductRepository;
 import com.example.lettuce.domain.carbonfootprint.repository.CarbonFootprintProductRepository;
 import com.example.lettuce.domain.user.entity.User;
+import com.example.lettuce.global.shared.async.AsyncEventProducer;
 import com.example.lettuce.global.shared.constant.PromptConstants;
-import com.example.lettuce.global.shared.event.AsyncEventProducer;
 import com.example.lettuce.global.shared.exception.BaseException;
 import com.example.lettuce.global.shared.exception.code.ErrorCode;
 import com.example.lettuce.global.shared.openai.OpenAiService;

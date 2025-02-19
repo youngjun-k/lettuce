@@ -20,8 +20,8 @@ import com.example.lettuce.domain.user.entity.User;
 import com.example.lettuce.domain.user.enums.UserRole;
 import com.example.lettuce.global.shared.response.CommonResponse;
 import com.example.lettuce.global.shared.response.VoidResponse;
-import com.example.lettuce.global.framework.annotation.RateLimitType;
-import com.example.lettuce.global.framework.annotation.RateLimited;
+import com.example.lettuce.global.framework.ratelimit.annotation.RateLimitType;
+import com.example.lettuce.global.framework.ratelimit.annotation.RateLimited;
 import com.example.lettuce.global.framework.security.annotation.LoginUser;
 import com.example.lettuce.global.shared.exception.code.SuccessCode;
 

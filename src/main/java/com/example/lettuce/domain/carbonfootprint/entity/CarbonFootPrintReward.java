@@ -3,7 +3,7 @@ package com.example.lettuce.domain.carbonfootprint.entity;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-import com.example.lettuce.global.shared.entity.BaseCreatedTimeEntity;
+import com.example.lettuce.global.shared.entity.BaseTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -26,7 +26,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "carbon_footprint_rewards", indexes = {
         @Index(name = "idx_carbon_footprints_user_id", columnList = "user_id")
 })
-public class CarbonFootPrintReward extends BaseCreatedTimeEntity {
+public class CarbonFootPrintReward extends BaseTime {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

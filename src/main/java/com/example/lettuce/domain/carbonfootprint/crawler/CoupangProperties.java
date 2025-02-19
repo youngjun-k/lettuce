@@ -1,4 +1,4 @@
-package com.example.lettuce.global.shared.properties;
+package com.example.lettuce.domain.carbonfootprint.crawler;
 
 import java.net.URI;
 import java.net.URISyntaxException;

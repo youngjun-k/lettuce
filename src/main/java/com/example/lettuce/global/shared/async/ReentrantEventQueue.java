@@ -1,4 +1,4 @@
-package com.example.lettuce.domain.carbonfootprint.repository;
+package com.example.lettuce.global.shared.async;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -10,9 +10,6 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-
-import com.example.lettuce.global.shared.event.AsyncEventConsumer;
-import com.example.lettuce.global.shared.event.AsyncEventProducer;
 
 import lombok.extern.slf4j.Slf4j;
 

@@ -1,6 +1,5 @@
-package com.example.lettuce.domain.carbonfootprint.repository;
+package com.example.lettuce.global.shared.async;
 
-import com.example.lettuce.global.shared.event.AsyncEventProducer;
 import com.zaxxer.hikari.HikariDataSource;
 
 import java.util.ArrayList;

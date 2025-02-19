@@ -1,4 +1,4 @@
-package com.example.lettuce.global.framework.annotation;
+package com.example.lettuce.global.framework.ratelimit.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

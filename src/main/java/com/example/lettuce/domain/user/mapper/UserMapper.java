@@ -1,4 +1,4 @@
-package com.example.lettuce.global.shared.mapper;
+package com.example.lettuce.domain.user.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

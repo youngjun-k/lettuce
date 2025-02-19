@@ -1,4 +1,4 @@
-package com.example.lettuce.global.framework.annotation;
+package com.example.lettuce.global.framework.ratelimit.annotation;
 
 public enum RateLimitType {
     USER(10, 1, 60),

@@ -4,8 +4,8 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 
 import com.example.lettuce.domain.carbonfootprint.entity.CarbonFootPrintReward;
+import com.example.lettuce.domain.carbonfootprint.mapper.CarbonFootPrintMapper;
 import com.example.lettuce.domain.carbonfootprint.repository.CarbonFootprintRewardRepository;
-import com.example.lettuce.global.shared.mapper.CarbonFootPrintMapper;
 import com.example.lettuce.global.shared.s3.S3Service;
 import com.example.lettuce.global.shared.s3.UploadImageInfo;
 

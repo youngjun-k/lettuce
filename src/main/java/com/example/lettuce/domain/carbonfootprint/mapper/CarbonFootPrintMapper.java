@@ -1,4 +1,4 @@
-package com.example.lettuce.global.shared.mapper;
+package com.example.lettuce.domain.carbonfootprint.mapper;
 
 import org.mapstruct.Mapper;
 

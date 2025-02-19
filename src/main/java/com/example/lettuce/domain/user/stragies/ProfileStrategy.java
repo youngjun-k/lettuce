@@ -1,4 +1,4 @@
-package com.example.lettuce.domain.user.service;
+package com.example.lettuce.domain.user.stragies;
 
 import com.example.lettuce.domain.user.dto.request.UpdateUserProfileRequest;
 import com.example.lettuce.domain.user.entity.Profile;

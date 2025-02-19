@@ -3,8 +3,8 @@ package com.example.lettuce.domain.email.service;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import com.example.lettuce.global.framework.annotation.RateLimitType;
-import com.example.lettuce.global.framework.annotation.RateLimited;
+import com.example.lettuce.global.framework.ratelimit.annotation.RateLimitType;
+import com.example.lettuce.global.framework.ratelimit.annotation.RateLimited;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;

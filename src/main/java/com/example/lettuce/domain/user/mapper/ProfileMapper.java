@@ -1,4 +1,4 @@
-package com.example.lettuce.global.shared.mapper;
+package com.example.lettuce.domain.user.mapper;
 
 import com.example.lettuce.domain.auth.dto.request.CreateUserRequest;
 import com.example.lettuce.domain.user.dto.ProfileInfo;

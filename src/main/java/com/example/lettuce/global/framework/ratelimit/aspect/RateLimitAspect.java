@@ -1,8 +1,8 @@
-package com.example.lettuce.global.framework.aspect;
+package com.example.lettuce.global.framework.ratelimit.aspect;
 
-import com.example.lettuce.global.framework.annotation.RateLimitType;
-import com.example.lettuce.global.framework.annotation.RateLimited;
-import com.example.lettuce.global.shared.parser.CustomSpringELParser;
+import com.example.lettuce.global.framework.ratelimit.annotation.RateLimitType;
+import com.example.lettuce.global.framework.ratelimit.annotation.RateLimited;
+import com.example.lettuce.global.framework.ratelimit.parser.CustomSpringELParser;
 import com.example.lettuce.global.shared.exception.BaseException;
 import com.example.lettuce.global.shared.exception.code.ErrorCode;
 

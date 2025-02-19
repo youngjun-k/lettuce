@@ -1,4 +1,4 @@
-package com.example.lettuce.global.shared.parser;
+package com.example.lettuce.global.framework.ratelimit.parser;
 
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;

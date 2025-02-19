@@ -1,4 +1,4 @@
-package com.example.lettuce.domain.carbonfootprint.repository;
+package com.example.lettuce.domain.carbonfootprint.crawler;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -6,11 +6,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import com.example.lettuce.domain.carbonfootprint.dto.response.CarbonFootprintProductResponse;
+import com.example.lettuce.domain.carbonfootprint.repository.CarbonFootprintProductRepository;
 import com.example.lettuce.global.shared.constant.PromptConstants;
 import com.example.lettuce.global.shared.exception.BaseException;
 import com.example.lettuce.global.shared.exception.code.ErrorCode;
 import com.example.lettuce.global.shared.openai.OpenAiService;
-import com.example.lettuce.global.shared.properties.CoupangProperties;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Getter
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
-public abstract class BaseCreatedTimeEntity {
+public abstract class BaseCreatedTime {
     @CreatedDate
     @Column(name = "created_at", updatable = false, columnDefinition = "datetime comment '생성일'")
     private LocalDateTime createdAt;
