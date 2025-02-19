@@ -38,6 +38,21 @@ JDBCTemplate는 가장 직관적인 데이터베이스 접근 방식이며 명�
 MyBatis는 쿼리 재사용 쉬움이 간편하지만 비동기 처리 어려움과 코드 재사용 어려움이 있습니다.
 JPA는 코드 재사용 쉬움과 쿼리 재사용 쉬움을 지원하지만 성능제어 어려움이 있습니다.
 
+```mermaid
+sequenceDiagram
+    participant Service as CarbonFootprintService
+    participant Producer as AsyncEventProducer
+    participant MultiProc as AsyncMultiProcessor
+    participant Queue as ReentrantEventQueue
+    participant Repo as AsyncCarbonFootprintProductRepository
+
+    Service->>Producer: Publish CarbonFootprintProductEvent
+    Producer->>MultiProc: produce(product list)
+    MultiProc->>Queue: Enqueue products
+    Queue-->>MultiProc: Consume batch of products
+    MultiProc->>Repo: Call saveAll(products)
+```
+
 저는 성능이 크리티컬한 곳에서는 JDBCTemplate를 사용하고 그렇지 않은 곳에서는 JPA를 사용하여 편의성과 성능 사이에 밸런스를 잡았습니다.
 
 캐싱은 데이터베이스 조회 성능을 향상시키는 중요한 기술입니다. 대체적으로 단일 서버에 적합한 스프링에서 기본적으로 제공하는 인메모리 캐싱 그리고 분산 시스템에서 사용되는 레디스 캐싱 기술이 있는데 현재 프로젝트는 AWS EC2 하나의 인스턴스에서 돌아가기 때문에 인메모리 캐싱을 사용하였습니다.
