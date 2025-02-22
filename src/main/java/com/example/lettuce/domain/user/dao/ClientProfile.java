@@ -8,15 +8,11 @@ import com.example.lettuce.domain.user.service.ProfileUpdatable;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-import com.example.lettuce.domain.user.enums.Level;
 
 
 @Entity

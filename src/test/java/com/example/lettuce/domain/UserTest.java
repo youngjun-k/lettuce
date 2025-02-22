@@ -4,7 +4,7 @@ import org.junit.Test;
 
 import com.example.lettuce.domain.carbonfootprint.dao.CarbonFootPrintReward;
 import com.example.lettuce.domain.user.dao.User;
-import com.example.lettuce.domain.user.enums.Level;
+import com.example.lettuce.domain.user.enums.UserTier;
 
 import java.util.Collections;
 
@@ -26,7 +26,7 @@ public class UserTest {
                 user.levelUp();
 
                 // then
-                assertThat(user.getLevel()).isEqualTo(Level.NORMAL);
+                assertThat(user.getUserTier()).isEqualTo(UserTier.NORMAL);
         }
 
         @Test
@@ -43,7 +43,7 @@ public class UserTest {
                 user.levelUp();
 
                 // then
-                assertThat(user.getLevel()).isEqualTo(Level.SILVER);
+                assertThat(user.getUserTier()).isEqualTo(UserTier.SILVER);
         }
 
         @Test
@@ -60,7 +60,7 @@ public class UserTest {
                 user.levelUp();
 
                 // then
-                assertThat(user.getLevel()).isEqualTo(Level.GOLD);
+                assertThat(user.getUserTier()).isEqualTo(UserTier.GOLD);
         }
 
         @Test
@@ -77,6 +77,6 @@ public class UserTest {
                 user.levelUp();
 
                 // then
-                assertThat(user.getLevel()).isEqualTo(Level.VIP);
+                assertThat(user.getUserTier()).isEqualTo(UserTier.VIP);
         }
 }

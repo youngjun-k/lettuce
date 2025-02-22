@@ -2,16 +2,16 @@ package com.example.lettuce.domain.user.enums;
 
 import java.util.Objects;
 
-public enum Level {
+public enum UserTier {
     VIP(500_000, null),
     GOLD(500_000, VIP),
     SILVER(300_000, GOLD),
     NORMAL(200_000, SILVER);
 
     private final int requiredCarbonFootprint;
-    private final Level nextLevel;
+    private final UserTier nextLevel;
 
-    Level(int requiredCarbonFootprint, Level nextLevel) {
+    UserTier(int requiredCarbonFootprint, UserTier nextLevel) {
         this.requiredCarbonFootprint = requiredCarbonFootprint;
         this.nextLevel = nextLevel;
     }
@@ -20,7 +20,7 @@ public enum Level {
         return requiredCarbonFootprint;
     }
 
-    public static boolean availableLevelUp(Level level, int totalAmount) {
+    public static boolean availableLevelUp(UserTier level, int totalAmount) {
         if (Objects.isNull(level)) {
             return false;
         }
@@ -32,28 +32,28 @@ public enum Level {
         return totalAmount >= level.nextLevel.requiredCarbonFootprint;
     }
 
-    public static Level getNextLevel(int totalAmount) {
+    public static UserTier getNextLevel(int totalAmount) {
         // return Arrays.stream(values())
         // .filter(x -> totalAmount >= x.nextAmount)
         // .findFirst()
         // .map(x -> x.nextLevel)
-        // .orElse(Level.VIP);
-        if (totalAmount >= Level.VIP.requiredCarbonFootprint) {
-            return Level.VIP;
+        // .orElse(UserTier.VIP);
+        if (totalAmount >= UserTier.VIP.requiredCarbonFootprint) {
+            return UserTier.VIP;
         }
 
-        if (totalAmount >= Level.GOLD.requiredCarbonFootprint) {
-            return Level.GOLD;
+        if (totalAmount >= UserTier.GOLD.requiredCarbonFootprint) {
+            return UserTier.GOLD;
         }
 
-        if (totalAmount >= Level.SILVER.requiredCarbonFootprint) {
-            return Level.SILVER;
+        if (totalAmount >= UserTier.SILVER.requiredCarbonFootprint) {
+            return UserTier.SILVER;
         }
 
-        if (totalAmount >= Level.NORMAL.requiredCarbonFootprint) {
-            return Level.NORMAL;
+        if (totalAmount >= UserTier.NORMAL.requiredCarbonFootprint) {
+            return UserTier.NORMAL;
         }
 
-        return Level.NORMAL;
+        return UserTier.NORMAL;
     }
 }

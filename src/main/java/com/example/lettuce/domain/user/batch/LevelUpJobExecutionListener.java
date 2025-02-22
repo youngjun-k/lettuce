@@ -7,7 +7,6 @@ import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobExecutionListener;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Slf4j
@@ -29,8 +28,21 @@ public class LevelUpJobExecutionListener implements JobExecutionListener {
 
         long time = java.time.Duration.between(jobExecution.getStartTime(), jobExecution.getEndTime()).toMillis();
 
-        log.info("회원등급 업데이트 배치 프로그램");
-        log.info("-------------------------------");
-        log.info("총 데이터 처리 {}건, 처리 시간 : {}millis", users.size(), time);
+        log.info("User Level Update Batch Job Summary");
+        log.info("----------------------------------");
+        log.info("Job Execution ID: {}", jobExecution.getId());
+        log.info("Job Status: {}", jobExecution.getStatus());
+        log.info("Start Time: {}", jobExecution.getStartTime());
+        log.info("End Time: {}", jobExecution.getEndTime());
+        log.info("Total Processing Time: {} ms", time);
+        log.info("Total Records Processed: {}", users.size());
+        log.info("Step Execution Summary:");
+        jobExecution.getStepExecutions()
+                .forEach(step -> log.info("  Step: {}, Status: {}, Read: {}, Write: {}, Skip: {}",
+                        step.getStepName(),
+                        step.getStatus(),
+                        step.getReadCount(),
+                        step.getWriteCount(),
+                        step.getSkipCount()));
     }
 }

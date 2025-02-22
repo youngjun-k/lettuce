@@ -3,15 +3,23 @@ package com.example.lettuce.domain.user.batch;
 import com.example.lettuce.domain.user.repository.UserRepository;
 import com.example.lettuce.domain.carbonfootprint.dao.CarbonFootPrintReward;
 import com.example.lettuce.domain.user.dao.User;
+import com.example.lettuce.domain.user.enums.UserTier;
+
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.IntStream;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class SaveUserTasklet implements Tasklet {
 
     private final int SIZE = 10;
@@ -24,77 +32,39 @@ public class SaveUserTasklet implements Tasklet {
 
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
-        List<User> users = createUsers();
+        log.info("SaveUserTasklet execute");
+        try {
+            List<User> users = createUsers();
 
-        Collections.shuffle(users);
+            Collections.shuffle(users);
 
-        userRepository.saveAll(users);
+            userRepository.saveAll(users);
+        } catch (Exception e) {
+            log.error("SaveUserTasklet execute error", e);
+        }
 
         return RepeatStatus.FINISHED;
     }
 
     private List<User> createUsers() {
         List<User> users = new ArrayList<>();
+        AtomicInteger counter = new AtomicInteger(0);
 
-        // normal
-        for (int i = 0; i < SIZE; i++) {
-            users.add(User.builder()                    
-                    .rewards(Collections.singletonList(CarbonFootPrintReward.builder()
-
-                            .itemName("item" + i)
-                            .awardedPoint(1_000)
-                            .build()))
-                    .email("username" + i + "@example.com")
-                    .password("password" + i)
-                    .enabled(true)
-                    .verified(true)                    
-                    .build());
-        }
-
-        // silver
-        for (int i = 0; i < SIZE; i++) {
-            users.add(User.builder()
-                    .rewards(Collections.singletonList(CarbonFootPrintReward.builder()
-
-                            .itemName("item" + i)
-                            .awardedPoint(200_000)
-                            .build()))
-                    .email("username" + i + "@example.com")
-                    .password("password" + i)
-                    .enabled(true)
-                    .verified(true)
-                    .build());
-        }
-
-        // gold
-        for (int i = 0; i < SIZE; i++) {
-            users.add(User.builder()
-                    .rewards(Collections.singletonList(CarbonFootPrintReward.builder()
-
-                            .itemName("item" + i)
-                            .awardedPoint(300_000)
-                            .build()))
-                    .email("username" + i + "@example.com")
-                    .password("password" + i)
-                    .enabled(true)
-                    .verified(true)
-                    .build());
-        }
-
-        // vip
-        for (int i = 0; i < SIZE; i++) {
-            users.add(User.builder()
-                    .rewards(Collections.singletonList(CarbonFootPrintReward.builder()
-
-                            .itemName("item" + i)
-                            .awardedPoint(500_000)
-                            .build()))
-                    .email("username" + i + "@example.com")
-                    .password("password" + i)
-                    .enabled(true)
-                    .verified(true)
-                    .build());
-        }
+        Arrays.stream(UserTier.values()).forEach(tier -> {
+            IntStream.range(0, SIZE).forEach(i -> {
+                int uniqueId = counter.getAndIncrement();
+                users.add(User.builder()
+                        .rewards(Collections.singletonList(CarbonFootPrintReward.builder()
+                                .itemName("item" + uniqueId)
+                                .awardedPoint(tier.getRequiredCarbonFootprint())
+                                .build()))
+                        .email("username" + uniqueId + "@example.com")
+                        .password("password" + uniqueId)
+                        .enabled(true)
+                        .verified(true)
+                        .build());
+            });
+        });
         return users;
     }
 }

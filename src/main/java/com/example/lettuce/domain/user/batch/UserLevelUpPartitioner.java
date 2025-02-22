@@ -7,6 +7,9 @@ import org.springframework.batch.item.ExecutionContext;
 import java.util.HashMap;
 import java.util.Map;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class UserLevelUpPartitioner implements Partitioner {
 
     private final UserRepository userRepository;
@@ -17,8 +20,26 @@ public class UserLevelUpPartitioner implements Partitioner {
 
     @Override
     public Map<String, ExecutionContext> partition(int gridSize) {
+        if (gridSize <= 0) {
+            throw new IllegalArgumentException("Grid size must be greater than 0");
+        }
+
         long minId = userRepository.findMinId(); // 1
         long maxId = userRepository.findMaxId(); // 4000
+
+        if (minId > maxId) {
+            throw new IllegalArgumentException("Min ID must be less than max ID");
+        }
+
+        if (minId == maxId) {
+            Map<String, ExecutionContext> singlePartition = new HashMap<>();
+            ExecutionContext context = new ExecutionContext();
+            context.putLong("minId", minId);
+            context.putLong("maxId", maxId);
+            singlePartition.put("partition0", context);
+            return singlePartition;
+        }
+
         long targetSize = (maxId - minId) / gridSize + 1; // 500
 
         /**
@@ -46,6 +67,12 @@ public class UserLevelUpPartitioner implements Partitioner {
             start += targetSize;
             end += targetSize;
             number++;
+
+            // Safety check to prevent infinite loop
+            if (number > gridSize) {
+                log.error("Partition number must be less than grid size");
+                throw new IllegalArgumentException("Partition number must be less than grid size");
+            }
         }
 
         return result;

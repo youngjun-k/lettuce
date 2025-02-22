@@ -28,7 +28,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.AccessLevel;
-import com.example.lettuce.domain.user.enums.Level;
+import com.example.lettuce.domain.user.enums.UserTier;
 
 @Getter
 @Entity
@@ -62,8 +62,8 @@ public class User extends BaseTime {
 
     @Builder.Default
     @Enumerated(EnumType.STRING)
-    @Column(name = "level", nullable = false, columnDefinition = "VARCHAR(255) DEFAULT 'NORMAL' COMMENT '회원 레벨'")
-    private Level level = Level.NORMAL;
+    @Column(name = "user_tier", nullable = false, columnDefinition = "VARCHAR(255) DEFAULT 'NORMAL' COMMENT '회원 레벨'")
+    private UserTier userTier = UserTier.NORMAL;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "client_profile_id")
@@ -123,12 +123,12 @@ public class User extends BaseTime {
     }
 
     public boolean availableLevelUp() {
-        return Level.availableLevelUp(this.level, this.getTotalAmount());
+        return UserTier.availableLevelUp(this.userTier, this.getTotalAmount());
     }
 
-    public Level levelUp() {
-        Level nextLevel = Level.getNextLevel(this.getTotalAmount());
-        this.level = nextLevel;
-        return nextLevel;
+    public UserTier levelUp() {
+        UserTier nextTier = UserTier.getNextLevel(this.getTotalAmount());
+        this.userTier = nextTier;
+        return nextTier;
     }
 }
