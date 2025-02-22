@@ -173,7 +173,80 @@ private static int calculatePoolSize(JdbcTemplate jdbcTemplate) {
 
 ---
 
-### 3. API 엔드포인트 Rate Limiting 이슈
+### 3. 배치 프로세스 최적화
+
+문제 상황
+
+- 초기 구현: 단일 스레드로 전체 사용자의 레벨 업데이트를 처리하다 보니, 데이터가 증가할수록 처리 시간이 선형적으로 증가
+- 증상: 약 4,000명의 사용자 데이터 처리 시 30분 이상 소요되는 성능 이슈 발생
+- 원인: 단일 스레드에서의 순차 처리로 인한 병목 현상
+
+해결 방안: Partiion 처리 도입
+
+1. 데이터 파티셔닝
+
+```java
+public class UserLevelUpPartitioner implements Partitioner {
+    @Override
+    public Map<String, ExecutionContext> partition(int gridSize) {
+        long minId = userRepository.findMinId(); // 1
+        long maxId = userRepository.findMaxId(); // 4000
+        long targetSize = (maxId - minId) / gridSize + 1; // 500
+
+        // 파티션별로 처리할 사용자 ID 범위 설정
+        Map<String, ExecutionContext> result = new HashMap<>();
+        long start = minId;
+        long end = start + targetSize - 1;
+
+        while (start <= maxId) {
+            ExecutionContext value = new ExecutionContext();
+            value.putLong("minId", start);
+            value.putLong("maxId", end);
+            // ... 파티션 설정 로직
+        }
+        return result;
+    }
+}
+```
+
+2. 비동기 처리 도입:
+
+```java
+private AsyncItemProcessor<User, User> itemProcessor() {
+    ItemProcessor<User, User> itemProcessor = user -> {
+        if (user.availableLevelUp()) {
+            return user;
+        }
+        return null;
+    };
+
+    AsyncItemProcessor<User, User> asyncItemProcessor = new AsyncItemProcessor<>();
+    asyncItemProcessor.setDelegate(itemProcessor);
+    asyncItemProcessor.setTaskExecutor(taskExecutor);
+    return asyncItemProcessor;
+}
+```
+
+3. TaskExecutor 설정:
+
+```java
+@Bean(JOB_NAME + "_taskExecutorPartitionHandler")
+public TaskExecutorPartitionHandler taskExecutorPartitionHandler() throws Exception {
+    TaskExecutorPartitionHandler handler = new TaskExecutorPartitionHandler();
+    handler.setStep(userLevelUpStep());
+    handler.setTaskExecutor(this.taskExecutor);
+    handler.setGridSize(8);  // 8개의 파티션으로 분할 처리
+    return handler;
+}
+```
+
+### 개선 결과
+
+- 처리 시간이 30분에서 5분으로 단축 (약 83% 성능 향상)
+- CPU 사용률 최적화 (멀티코어 활용)
+- 메모리 사용량 안정화 (파티션별 독립적 처리)
+
+### 4. API 엔드포인트 Rate Limiting 이슈
 
 문제 상황
 
