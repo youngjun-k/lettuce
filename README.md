@@ -15,6 +15,11 @@
 
 ## 2. 아키텍처 개요
 
+<details>
+<summary>프로젝트 구조도</summary>
+
+![ddd](https://www.thoughtworks.com/content/dam/thoughtworks/images/photography/inline-image/insights/blog/microservices/blg_inline_ddd_implemented_fp_01.png)
+
 Lettuce는 도메인 주도 설계(DDD) 원칙을 기반으로 아래와 같이 계층을 분리하여 설계되었습니다.
 
 도메인 (Domain):
@@ -29,6 +34,90 @@ Lettuce는 도메인 주도 설계(DDD) 원칙을 기반으로 아래와 같이 
 글로벌 공유 (Global Shared):
 공통 설정, 예외 처리, 공통 응답 포맷, 그리고 AOP 기반 기능(예: Rate Limiting) 등을 포함합니다.
 아래 그림은 Lettuce의 주요 구성 요소 간 관계를 간략하게 나타냅니다.
+
+</details>
+
+<details>  
+<summary>ERD 다이어그램</summary>
+  
+![diagram](https://github.com/user-attachments/assets/850cf12d-5e3c-45df-9c36-c821deee2541) 
+</details>
+
+<details>  
+<summary>인프라 설계도</summary>
+  
+![image4](https://github.com/user-attachments/assets/e2d2ad87-a81e-48fa-be13-9d2f86b6ebd6)
+</details>
+
+<details>
+<summary>Sequence Diagram</summary>
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant C as CarbonFootPrintController
+    participant S as CarbonFootprintService
+    participant O as OpenAiService
+    participant E as EventPublisher
+    participant L as CarbonFootPrintEventListener
+    participant S3 as S3Service
+
+    U->>C: POST /api/carbon-footprint (image, user)
+    C->>S: calculateFootprintByImage(image, user)
+    S->>O: visionChat(image)
+    O-->>S: Analysis result
+    S->>E: Publish CarbonFootprintImageEvent
+    E->>L: Trigger event handling
+    L->>S3: Upload image to S3
+    L->>L: Map response to reward entity
+    L->>Repository: Save CarbonFootPrintReward
+    L-->>S3: Return upload info
+    S-->>C: Return CommonResponse with data
+    C-->>U: Respond with carbon footprint result
+```
+
+```mermaid
+sequenceDiagram
+    participant C as Client
+    participant JF as JwtAuthenticationFilter
+    participant JTP as JwtTokenProvider
+    participant UDS as UserDetailsServiceImpl
+
+    C->>JF: HTTP request with JWT token
+    JF->>JF: Extract token and request URI (path)
+    JF->>JTP: getAuthentication(token, path)
+    JTP->>UDS: if path starts with /profile, call loadUserWithProfileByEmail(email)
+    alt Otherwise
+        JTP->>UDS: call loadUserByUsername(email)
+    end
+    UDS-->>JTP: Return UserDetails
+    JTP-->>JF: Return Authentication object
+    JF-->>C: Continue request handling
+```
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant PC as ProfileController
+    participant PS as ProfileService
+    participant S3 as S3Service
+    participant DB as Database/Profile
+
+    U->>PC: PUT /profile (multipart: JSON request + optional image)
+    PC->>PS: updateProfile(user, profileRequest, profileImage)
+    PS->>PS: Invoke private updateProfile()
+    alt Profile image provided
+        PS->>S3: Upload profile image
+        S3-->>PS: Return image URL
+        PS->>DB: profile.updateProfileImage(image URL)
+    end
+    PS->>DB: profile.updateBaseProfile(profileRequest)
+    DB-->>PS: Save updated profile
+    PS-->>PC: Return update confirmation
+    PC-->>U: Send response
+```
+
+</details>
 
 ## 3. 기술 선택
 
