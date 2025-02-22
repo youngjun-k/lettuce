@@ -11,7 +11,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
-public abstract class BaseTime extends BaseCreatedTimeEntity {
+public abstract class BaseTime extends BaseCreatedTime {
     @LastModifiedDate
     @Column(name = "updated_at", nullable = false, columnDefinition = "datetime comment '수정일'")
     private LocalDateTime updatedAt;

@@ -9,11 +9,11 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.example.lettuce.domain.user.dao.User;
 import com.example.lettuce.domain.user.dto.request.UpdateClientProfileRequest;
 import com.example.lettuce.domain.user.dto.request.UpdateFarmerProfileRequest;
 import com.example.lettuce.domain.user.dto.request.UpdatePartnerProfileRequest;
 import com.example.lettuce.domain.user.dto.response.ProfileResponse;
-import com.example.lettuce.domain.user.entity.User;
 import com.example.lettuce.domain.user.service.ProfileService;
 import com.example.lettuce.global.shared.response.CommonResponse;
 import com.example.lettuce.global.shared.response.VoidResponse;

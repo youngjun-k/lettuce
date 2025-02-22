@@ -13,13 +13,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.example.lettuce.domain.carbonfootprint.dao.CarbonFootPrintProduct;
 import com.example.lettuce.domain.carbonfootprint.dto.response.CarbonFootprintProductResponse;
 import com.example.lettuce.domain.carbonfootprint.dto.response.CarbonFootprintRewardResponse;
 import com.example.lettuce.domain.carbonfootprint.repository.AsyncCarbonFootprintProductRepository;
 import com.example.lettuce.domain.carbonfootprint.repository.CarbonFootprintProductRepository;
-import com.example.lettuce.domain.user.entity.User;
+import com.example.lettuce.domain.user.dao.User;
+import com.example.lettuce.global.shared.async.AsyncEventProducer;
 import com.example.lettuce.global.shared.constant.PromptConstants;
-import com.example.lettuce.global.shared.event.AsyncEventProducer;
 import com.example.lettuce.global.shared.exception.BaseException;
 import com.example.lettuce.global.shared.exception.code.ErrorCode;
 import com.example.lettuce.global.shared.openai.OpenAiService;
@@ -87,8 +88,24 @@ public class CarbonFootprintService {
         return response;
     }
 
+    /**
+     * Calculate Carbon Footprint by Name.
+     * <p>
+     * This method retrieves a list of CarbonFootprintProductResponse by name from
+     * the crawler
+     * and maps it to a Page of CarbonFootprintProductResponse.
+     * </p>
+     * 
+     * @param name     the name of the product
+     * @param pageable the pageable object
+     * @param user     the current user performing the operation
+     * @return a Page of CarbonFootprintProductResponse containing product details
+     *         and
+     *         carbon footprint
+     */
     @Cacheable(value = "carbon_footprint_product_by_product_name", key = "#name")
-    public Page<CarbonFootprintProductResponse> calculateFootprintByName(String name, Pageable pageable, User user) {
+    public Page<CarbonFootprintProductResponse> calculateFootprintByName(String name, Pageable pageable,
+            User user) {
         Page<CarbonFootprintProductResponse> responses = carbonFootprintProductRepository.findByName(name, pageable);
 
         if (responses.isEmpty()) {
@@ -102,6 +119,19 @@ public class CarbonFootprintService {
         return responses;
     }
 
+    /**
+     * Find Carbon Footprint by User ID.
+     * <p>
+     * This method retrieves a list of CarbonFootprintProductResponse by user ID
+     * from the crawler
+     * and maps it to a List of CarbonFootprintProductResponse.
+     * </p>
+     * 
+     * @param userId the ID of the user
+     * @return a List of CarbonFootprintProductResponse containing product details
+     *         and
+     *         carbon footprint
+     */
     public List<CarbonFootprintProductResponse> findFootprintByUserId(Long userId) {
         List<CarbonFootprintProductResponse> responses = asyncCarbonFootprintProductRepository
                 .findByProductByUserId(userId);

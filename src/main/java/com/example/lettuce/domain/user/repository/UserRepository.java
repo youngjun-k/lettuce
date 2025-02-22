@@ -1,12 +1,14 @@
 package com.example.lettuce.domain.user.repository;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.example.lettuce.domain.user.entity.User;
+import com.example.lettuce.domain.user.dao.User;
 
 public interface UserRepository extends JpaRepository<User, Long> {
 
@@ -31,5 +33,14 @@ public interface UserRepository extends JpaRepository<User, Long> {
      * It saves the cost of fetching the entire entity and the memory usage.
      */
     <T> T findByEmailAndDeletedAtIsNull(String email, Class<T> projection);
+
+    @Query("SELECT u FROM User u WHERE u.updatedAt = :updatedAt AND u.deletedAt IS NULL")
+    List<User> findAllByUpdatedAt(@Param("updatedAt") LocalDate updatedAt);
+
+    @Query(value = "select min(u.id) from User u")
+    long findMinId();
+
+    @Query(value = "select max(u.id) from User u")
+    long findMaxId();
 
 }

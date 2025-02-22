@@ -1,7 +1,7 @@
 package com.example.lettuce.domain.user.dto.request;
 
 
-import com.example.lettuce.domain.user.entity.PartnerProfile;
+import com.example.lettuce.domain.user.dao.PartnerProfile;
 
 import io.micrometer.common.lang.Nullable;
 import jakarta.validation.constraints.NotBlank;

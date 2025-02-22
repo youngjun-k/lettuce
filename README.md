@@ -1,9 +1,10 @@
-# 친환경 소비를 위한 탄소 배출량 최소화 시스템 Lettuce
+# Lettuce
+
 ![Screenshot 2025-02-19 at 18 50 35](https://github.com/user-attachments/assets/9148b0b7-e414-4e86-92f9-71503ebeb5b3)
 
 ## 1. 프로젝트 선정 배경 및 목표
 
-저는 2025년 1월 지난달에 해카톤에서 UN에서 선정한 Sustainable Development Goals(SDGs) 중 9번 Industry, Innovation and Infrastructure와 13번 Climate Action에 대해 프로젝트를 진행하였습니다.
+2025년 1월 지난달에 해카톤에서 UN에서 선정한 Sustainable Development Goals(SDGs)을 주제로 저희 팀은 9번 Industry, Innovation and Infrastructure와 13번 Climate Action에 대해 프로젝트를 진행하였습니다.
 
 프로젝트는 유저의 친환경 소비 형태를 분석하여 탄소 배출량을 측정한다음 보상으로 포인트를 지급하여 유저는 지급 받은 포인트로 농부들로 부터 surpluse food를 구매할수 있는 플랫폼을 구현하였습니다.
 
@@ -47,7 +48,9 @@ JPA는 코드 재사용 쉬움과 쿼리 재사용 쉬움을 지원하지만 성
 시스템이 실제로 얼마나 많은 데이터를 처리할 수 있는지 테스트하기 위한 환경을 구축했습니다. 단순히 처리량을 측정하는 것뿐만 아니라, 부하 상태에서 시스템이 어떤 한계에 도달하는지가 주요 포인트였습니다. 이 과정에서 Nginx, Spring, MySQL 각 컴포넌트가 어떻게 성능을 발휘하는지 확인하기 위해 다양한 부하 조건을 적용했습니다.
 
 Nginx: 부하가 몰릴 때 얼마나 많은 요청을 안정적으로 전달할 수 있는가?
+
 Spring 서버: 트래픽이 증가할 때 서버가 정상적으로 응답하고, 처리량이 얼마나 되는가?
+
 MySQL: 대량의 로그 데이터를 처리하면서, DB가 어느 시점에서 병목 현상이 발생하는지?
 
 프로젝트가 실제로 배포된후를 고려했을떄 사용자 100만명이 있는 서비스 앱이 있을때 100만개의 서로 다른 인스턴스에서 요청이 들어오는데 다수의 인스턴스에서 동시에 요청이 들어왔을떄도 시스템이 안정적으로 동작하는지 확인하기 위해 테스트 환경을 구축했습니다.
@@ -55,7 +58,7 @@ MySQL: 대량의 로그 데이터를 처리하면서, DB가 어느 시점에서 
 두가지 테스트 방식을 택하였는데 첫번째는 JMeter를 사용하여 로컬 환경에서 부하를 주는 방식이고 두번째는 AWS Lambda를 사용하여 클라우드 환경에서 부하를 주는 방식입니다.
 
 비교적 EC2보다 확장이 용이하고 비용적 이점이 큰 AWS Lambda를 사용했습니다.
-Node.js 기반의 Lambda 테스트 환경을 만들었고, 인스턴스 400개를 동시에 실행해 서버에 요청을 보냈습니다. 이 테스트를 통해 동시 요청 시 어떻게 서버가 반응하는지, 어디서 병목이 발생하는지 확인할 수 있었습니다. 
+Node.js 기반의 Lambda 테스트 환경을 만들었고, 인스턴스 400개를 동시에 실행해 서버에 요청을 보냈습니다. 이 테스트를 통해 동시 요청 시 어떻게 서버가 반응하는지, 어디서 병목이 발생하는지 확인할 수 있었습니다.
 
 ## 4. 트러블 슈팅
 
@@ -73,6 +76,21 @@ Node.js 기반의 Lambda 테스트 환경을 만들었고, 인스턴스 400개�
   잠금 경합이 과도하게 발생함.
 
 해결 방안
+
+```mermaid
+sequenceDiagram
+    participant Service as CarbonFootprintService
+    participant Producer as AsyncEventProducer
+    participant MultiProc as AsyncMultiProcessor
+    participant Queue as ReentrantEventQueue
+    participant Repo as AsyncCarbonFootprintProductRepository
+
+    Service->>Producer: Publish CarbonFootprintProductEvent
+    Producer->>MultiProc: produce(product list)
+    MultiProc->>Queue: Enqueue products
+    Queue-->>MultiProc: Consume batch of products
+    MultiProc->>Repo: Call saveAll(products)
+```
 
 - 다중 큐 분산:
   단일 큐 대신 AsyncMultiProcessor를 도입하여 여러 개의 큐로 이벤트를 분산시켰습니다.
@@ -155,7 +173,80 @@ private static int calculatePoolSize(JdbcTemplate jdbcTemplate) {
 
 ---
 
-### 3. API 엔드포인트 Rate Limiting 이슈
+### 3. 배치 프로세스 최적화
+
+문제 상황
+
+- 초기 구현: 단일 스레드로 전체 사용자의 레벨 업데이트를 처리하다 보니, 데이터가 증가할수록 처리 시간이 선형적으로 증가
+- 증상: 약 4,000명의 사용자 데이터 처리 시 30분 이상 소요되는 성능 이슈 발생
+- 원인: 단일 스레드에서의 순차 처리로 인한 병목 현상
+
+해결 방안: Partiion 처리 도입
+
+1. 데이터 파티셔닝
+
+```java
+public class UserLevelUpPartitioner implements Partitioner {
+    @Override
+    public Map<String, ExecutionContext> partition(int gridSize) {
+        long minId = userRepository.findMinId(); // 1
+        long maxId = userRepository.findMaxId(); // 4000
+        long targetSize = (maxId - minId) / gridSize + 1; // 500
+
+        // 파티션별로 처리할 사용자 ID 범위 설정
+        Map<String, ExecutionContext> result = new HashMap<>();
+        long start = minId;
+        long end = start + targetSize - 1;
+
+        while (start <= maxId) {
+            ExecutionContext value = new ExecutionContext();
+            value.putLong("minId", start);
+            value.putLong("maxId", end);
+            // ... 파티션 설정 로직
+        }
+        return result;
+    }
+}
+```
+
+2. 비동기 처리 도입:
+
+```java
+private AsyncItemProcessor<User, User> itemProcessor() {
+    ItemProcessor<User, User> itemProcessor = user -> {
+        if (user.availableLevelUp()) {
+            return user;
+        }
+        return null;
+    };
+
+    AsyncItemProcessor<User, User> asyncItemProcessor = new AsyncItemProcessor<>();
+    asyncItemProcessor.setDelegate(itemProcessor);
+    asyncItemProcessor.setTaskExecutor(taskExecutor);
+    return asyncItemProcessor;
+}
+```
+
+3. TaskExecutor 설정:
+
+```java
+@Bean(JOB_NAME + "_taskExecutorPartitionHandler")
+public TaskExecutorPartitionHandler taskExecutorPartitionHandler() throws Exception {
+    TaskExecutorPartitionHandler handler = new TaskExecutorPartitionHandler();
+    handler.setStep(userLevelUpStep());
+    handler.setTaskExecutor(this.taskExecutor);
+    handler.setGridSize(8);  // 8개의 파티션으로 분할 처리
+    return handler;
+}
+```
+
+### 개선 결과
+
+- 처리 시간이 30분에서 5분으로 단축 (약 83% 성능 향상)
+- CPU 사용률 최적화 (멀티코어 활용)
+- 메모리 사용량 안정화 (파티션별 독립적 처리)
+
+### 4. API 엔드포인트 Rate Limiting 이슈
 
 문제 상황
 

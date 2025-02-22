@@ -6,12 +6,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.example.lettuce.domain.user.dao.Profile;
+import com.example.lettuce.domain.user.dao.User;
 import com.example.lettuce.domain.user.dto.request.UpdateUserProfileRequest;
 import com.example.lettuce.domain.user.dto.response.ProfileResponse;
-import com.example.lettuce.domain.user.entity.Profile;
-import com.example.lettuce.domain.user.entity.User;
+import com.example.lettuce.domain.user.mapper.ProfileMapper;
 import com.example.lettuce.domain.user.repository.UserRepository;
-import com.example.lettuce.global.shared.mapper.ProfileMapper;
+import com.example.lettuce.domain.user.stragies.ProfileStrategy;
 import com.example.lettuce.global.shared.s3.S3Service;
 import com.example.lettuce.global.shared.s3.UploadImageInfo;
 

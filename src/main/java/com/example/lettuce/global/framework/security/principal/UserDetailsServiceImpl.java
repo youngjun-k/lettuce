@@ -5,7 +5,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.example.lettuce.domain.user.entity.User;
+import com.example.lettuce.domain.user.dao.User;
 import com.example.lettuce.domain.user.service.UserService;
 import com.example.lettuce.global.shared.exception.AuthenticationException;
 import com.example.lettuce.global.shared.exception.code.ErrorCode;

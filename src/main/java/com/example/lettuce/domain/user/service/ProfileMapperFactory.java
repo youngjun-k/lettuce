@@ -1,10 +1,14 @@
 package com.example.lettuce.domain.user.service;
 
 import com.example.lettuce.domain.user.enums.UserRole;
-import com.example.lettuce.global.shared.mapper.ClientProfileMapper;
-import com.example.lettuce.global.shared.mapper.FarmerProfileMapper;
-import com.example.lettuce.global.shared.mapper.PartnerProfileMapper;
-import com.example.lettuce.global.shared.mapper.ProfileMapper;
+import com.example.lettuce.domain.user.mapper.ClientProfileMapper;
+import com.example.lettuce.domain.user.mapper.FarmerProfileMapper;
+import com.example.lettuce.domain.user.mapper.PartnerProfileMapper;
+import com.example.lettuce.domain.user.mapper.ProfileMapper;
+import com.example.lettuce.domain.user.stragies.ClientProfileStrategy;
+import com.example.lettuce.domain.user.stragies.FarmerProfileStrategy;
+import com.example.lettuce.domain.user.stragies.PartnerProfileStrategy;
+import com.example.lettuce.domain.user.stragies.ProfileStrategy;
 
 import org.mapstruct.factory.Mappers;
 

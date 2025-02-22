@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.example.lettuce.domain.carbonfootprint.dto.response.CarbonFootprintProductResponse;
 import com.example.lettuce.domain.carbonfootprint.dto.response.CarbonFootprintRewardResponse;
 import com.example.lettuce.domain.carbonfootprint.service.CarbonFootprintService;
-import com.example.lettuce.domain.user.entity.User;
+import com.example.lettuce.domain.user.dao.User;
 import com.example.lettuce.global.framework.security.annotation.LoginUser;
 import com.example.lettuce.global.shared.exception.code.SuccessCode;
 import com.example.lettuce.global.shared.response.CommonResponse;

@@ -1,6 +1,6 @@
 package com.example.lettuce.global.framework.security.resolver;
 
-import com.example.lettuce.domain.user.entity.User;
+import com.example.lettuce.domain.user.dao.User;
 import com.example.lettuce.global.framework.security.annotation.LoginUser;
 import com.example.lettuce.global.framework.security.principal.UserDetailsImpl;
 
