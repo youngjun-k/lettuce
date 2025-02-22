@@ -1,7 +1,10 @@
-package com.example.lettuce.domain.user.entity;
+package com.example.lettuce.domain.user.dao;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
+import com.example.lettuce.domain.carbonfootprint.dao.CarbonFootPrintReward;
 import com.example.lettuce.domain.user.enums.UserRole;
 import com.example.lettuce.global.shared.entity.BaseTime;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -17,6 +20,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -24,6 +28,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.AccessLevel;
+import com.example.lettuce.domain.user.enums.Level;
 
 @Getter
 @Entity
@@ -55,6 +60,11 @@ public class User extends BaseTime {
     @Column(name = "role", length = 20, nullable = false, columnDefinition = "varchar(20) default 'CLIENT' comment '회원 역할'")
     private UserRole role;
 
+    @Builder.Default
+    @Enumerated(EnumType.STRING)
+    @Column(name = "level", nullable = false, columnDefinition = "VARCHAR(255) DEFAULT 'NORMAL' COMMENT '회원 레벨'")
+    private Level level = Level.NORMAL;
+
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "client_profile_id")
     private ClientProfile clientProfile;
@@ -66,6 +76,11 @@ public class User extends BaseTime {
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "partner_profile_id")
     private PartnerProfile partnerProfile;
+
+    @Builder.Default
+    @OneToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
+    @JoinColumn(name = "carbon_footprint_rewards_id")
+    private List<CarbonFootPrintReward> rewards = new ArrayList<>();
 
     public Profile getProfile() {
         return switch (this.role) {
@@ -99,5 +114,21 @@ public class User extends BaseTime {
 
     public void delete() {
         this.deletedAt = LocalDateTime.now();
+    }
+
+    public int getTotalAmount() {
+        return this.rewards.stream()
+                .mapToInt(CarbonFootPrintReward::getAwardedPoint)
+                .sum();
+    }
+
+    public boolean availableLevelUp() {
+        return Level.availableLevelUp(this.level, this.getTotalAmount());
+    }
+
+    public Level levelUp() {
+        Level nextLevel = Level.getNextLevel(this.getTotalAmount());
+        this.level = nextLevel;
+        return nextLevel;
     }
 }

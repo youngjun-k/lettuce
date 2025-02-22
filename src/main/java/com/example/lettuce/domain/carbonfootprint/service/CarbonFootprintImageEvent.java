@@ -3,7 +3,7 @@ package com.example.lettuce.domain.carbonfootprint.service;
 import org.springframework.context.ApplicationEvent;
 
 import com.example.lettuce.domain.carbonfootprint.dto.response.CarbonFootprintRewardResponse;
-import com.example.lettuce.domain.user.entity.User;
+import com.example.lettuce.domain.user.dao.User;
 
 import lombok.Getter;
 

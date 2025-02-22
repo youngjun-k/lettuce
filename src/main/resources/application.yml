@@ -1,4 +1,6 @@
 spring:
+  autoconfigure:
+    exclude: org.springframework.ai.autoconfigure.vectorstore.weaviate.WeaviateVectorStoreAutoConfiguration
   application:
     name: lettuce
     client-base-url: ${CLIENT_BASE_URL}
@@ -34,3 +36,14 @@ spring:
       base-url: ${COUPANG_BASE_URL}
       base-product-url: ${COUPANG_PRODUCT_URL}
       list-url: ${COUPANG_LIST_URL}
+
+  batch:
+    jdbc:
+      initialize-schema: always
+    job:
+      enabled: false
+      name: partitionUserJob
+      partition:
+        user:
+          chunk: 1000
+        thread: 10

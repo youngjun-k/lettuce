@@ -1,6 +1,6 @@
 package com.example.lettuce.domain.user.dto.request;
 
-import com.example.lettuce.domain.user.entity.FarmerProfile;
+import com.example.lettuce.domain.user.dao.FarmerProfile;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;

@@ -7,7 +7,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.example.lettuce.domain.user.entity.User;
+import com.example.lettuce.domain.user.dao.User;
 
 public record UserDetailsImpl(User user) implements UserDetails {
 

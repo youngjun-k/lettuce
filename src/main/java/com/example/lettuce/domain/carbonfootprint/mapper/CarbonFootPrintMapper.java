@@ -2,8 +2,8 @@ package com.example.lettuce.domain.carbonfootprint.mapper;
 
 import org.mapstruct.Mapper;
 
+import com.example.lettuce.domain.carbonfootprint.dao.CarbonFootPrintReward;
 import com.example.lettuce.domain.carbonfootprint.dto.response.CarbonFootprintRewardResponse;
-import com.example.lettuce.domain.carbonfootprint.entity.CarbonFootPrintReward;
 
 @Mapper(componentModel = "spring")
 public interface CarbonFootPrintMapper {

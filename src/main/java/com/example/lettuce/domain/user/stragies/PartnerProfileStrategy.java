@@ -1,9 +1,9 @@
 package com.example.lettuce.domain.user.stragies;
 
+import com.example.lettuce.domain.user.dao.PartnerProfile;
+import com.example.lettuce.domain.user.dao.Profile;
 import com.example.lettuce.domain.user.dto.request.UpdatePartnerProfileRequest;
 import com.example.lettuce.domain.user.dto.request.UpdateUserProfileRequest;
-import com.example.lettuce.domain.user.entity.PartnerProfile;
-import com.example.lettuce.domain.user.entity.Profile;
 
 public class PartnerProfileStrategy implements ProfileStrategy {
 

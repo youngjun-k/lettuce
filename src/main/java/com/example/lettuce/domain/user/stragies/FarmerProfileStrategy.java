@@ -1,9 +1,9 @@
 package com.example.lettuce.domain.user.stragies;
 
+import com.example.lettuce.domain.user.dao.FarmerProfile;
+import com.example.lettuce.domain.user.dao.Profile;
 import com.example.lettuce.domain.user.dto.request.UpdateFarmerProfileRequest;
 import com.example.lettuce.domain.user.dto.request.UpdateUserProfileRequest;
-import com.example.lettuce.domain.user.entity.FarmerProfile;
-import com.example.lettuce.domain.user.entity.Profile;
 
 public class FarmerProfileStrategy implements ProfileStrategy {
 

@@ -16,7 +16,7 @@ import com.example.lettuce.domain.auth.dto.request.LoginRequest;
 import com.example.lettuce.domain.auth.dto.request.ResetPasswordRequest;
 import com.example.lettuce.domain.auth.dto.response.AuthResponse;
 import com.example.lettuce.domain.auth.service.AuthService;
-import com.example.lettuce.domain.user.entity.User;
+import com.example.lettuce.domain.user.dao.User;
 import com.example.lettuce.domain.user.enums.UserRole;
 import com.example.lettuce.global.shared.response.CommonResponse;
 import com.example.lettuce.global.shared.response.VoidResponse;

@@ -1,4 +1,4 @@
-package com.example.lettuce.domain.carbonfootprint.entity;
+package com.example.lettuce.domain.carbonfootprint.dao;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
