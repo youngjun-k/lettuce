@@ -7,7 +7,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.example.lettuce.domain.user.dao.User;
+import com.example.lettuce.domain.user.aggregate.User;
 
 public record UserDetailsImpl(User user) implements UserDetails {
 
@@ -45,7 +45,7 @@ public record UserDetailsImpl(User user) implements UserDetails {
 
     @Override
     public String getPassword() {
-        return user.getPassword();
+        return user.getPassword().getValue();
     }
 
     @Override

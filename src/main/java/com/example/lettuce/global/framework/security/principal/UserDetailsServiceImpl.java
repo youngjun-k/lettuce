@@ -5,8 +5,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.example.lettuce.domain.user.dao.User;
-import com.example.lettuce.domain.user.service.UserService;
+import com.example.lettuce.domain.user.aggregate.User;
+import com.example.lettuce.domain.user.query.UserQueryService;
 import com.example.lettuce.global.shared.exception.AuthenticationException;
 import com.example.lettuce.global.shared.exception.code.ErrorCode;
 
@@ -16,11 +16,11 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {
 
-    private final UserService userService;
+    private final UserQueryService userQueryService;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = userService.findByEmail(email);
+        User user = userQueryService.findByEmail(email);
 
         UserDetailsImpl userDetails = new UserDetailsImpl(user);
 
@@ -30,7 +30,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     }
 
     public UserDetails loadUserWithProfileByEmail(String email) throws UsernameNotFoundException {
-        User user = userService.findByEmailWithProfiles(email);
+        User user = userQueryService.findByEmailWithProfiles(email);
 
         UserDetailsImpl userDetails = new UserDetailsImpl(user);
 

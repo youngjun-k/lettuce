@@ -2,13 +2,13 @@ package com.example.lettuce.domain.carbonfootprint.mapper;
 
 import org.mapstruct.Mapper;
 
-import com.example.lettuce.domain.carbonfootprint.dao.CarbonFootPrintReward;
-import com.example.lettuce.domain.carbonfootprint.dto.response.CarbonFootprintRewardResponse;
+import com.example.lettuce.api.carbonfootprint.dto.response.CarbonFootprintRewardResponse;
+import com.example.lettuce.domain.carbonfootprint.aggregate.RewardHistory;
 
 @Mapper(componentModel = "spring")
 public interface CarbonFootPrintMapper {
 
-    CarbonFootPrintReward toEntity(CarbonFootprintRewardResponse response, Long userId, String imageUrl);
+    RewardHistory toEntity(CarbonFootprintRewardResponse response, Long userId, String imageUrl);
 
-    CarbonFootprintRewardResponse toResponse(CarbonFootPrintReward entity);
+    CarbonFootprintRewardResponse toResponse(RewardHistory entity);
 }

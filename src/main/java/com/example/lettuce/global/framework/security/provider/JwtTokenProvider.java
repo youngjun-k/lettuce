@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import com.example.lettuce.global.shared.constant.AuthConstants;
-import com.example.lettuce.domain.user.dao.User;
+import com.example.lettuce.domain.user.aggregate.User;
 import com.example.lettuce.global.framework.security.enums.TokenExpireTime;
 import com.example.lettuce.global.framework.security.principal.UserDetailsImpl;
 import com.example.lettuce.global.framework.security.principal.UserDetailsServiceImpl;

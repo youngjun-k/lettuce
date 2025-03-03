@@ -1,9 +1,9 @@
 package com.example.lettuce.domain.user.batch;
 
 import com.example.lettuce.domain.user.repository.UserRepository;
-import com.example.lettuce.domain.carbonfootprint.dao.CarbonFootPrintReward;
-import com.example.lettuce.domain.user.dao.User;
-import com.example.lettuce.domain.user.enums.UserTier;
+import com.example.lettuce.domain.carbonfootprint.aggregate.RewardHistory;
+import com.example.lettuce.domain.user.aggregate.User;
+import com.example.lettuce.domain.user.aggregate.enums.UserTier;
 
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.scope.context.ChunkContext;
@@ -23,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 public class SaveUserTasklet implements Tasklet {
 
     private final int SIZE = 10;
-    private final UserRepository userRepository;
+        private final UserRepository userRepository;
 
     public SaveUserTasklet(UserRepository userRepository) {
 
@@ -54,12 +54,11 @@ public class SaveUserTasklet implements Tasklet {
             IntStream.range(0, SIZE).forEach(i -> {
                 int uniqueId = counter.getAndIncrement();
                 users.add(User.builder()
-                        .rewards(Collections.singletonList(CarbonFootPrintReward.builder()
+                        .rewards(Collections.singletonList(RewardHistory.builder()
                                 .itemName("item" + uniqueId)
                                 .awardedPoint(tier.getRequiredCarbonFootprint())
                                 .build()))
-                        .email("username" + uniqueId + "@example.com")
-                        .password("password" + uniqueId)
+                        .email("username" + uniqueId + "@example.com")                    
                         .enabled(true)
                         .verified(true)
                         .build());

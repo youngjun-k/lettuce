@@ -13,8 +13,8 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import com.example.lettuce.domain.carbonfootprint.dao.CarbonFootPrintProduct;
-import com.example.lettuce.domain.carbonfootprint.dto.response.CarbonFootprintProductResponse;
+import com.example.lettuce.api.carbonfootprint.dto.response.CarbonFootprintProductResponse;
+import com.example.lettuce.domain.carbonfootprint.aggregate.CarbonFootPrintProduct;
 import com.example.lettuce.global.shared.async.AsyncMultiProcessor;
 import com.example.lettuce.global.shared.exception.BaseException;
 import com.example.lettuce.global.shared.exception.code.ErrorCode;

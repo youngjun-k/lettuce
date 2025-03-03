@@ -30,7 +30,7 @@ public class RateLimitAspect {
 
     private final ConcurrentHashMap<String, Bucket> buckets = new ConcurrentHashMap<>();
 
-    @Around("@annotation(com.example.lettuce.global.framework.annotation.RateLimited)")
+    @Around("@annotation(com.example.lettuce.global.framework.ratelimit.annotation.RateLimited)")
     public Object around(ProceedingJoinPoint joinPoint) throws Throwable {
         RateLimited rateLimited = getRateLimited(joinPoint);
         String key = resolveKey(joinPoint, rateLimited);
@@ -41,14 +41,14 @@ public class RateLimitAspect {
         return joinPoint.proceed();
     }
 
-    @AfterReturning("execution(* com.example.lettuce.domain.auth.controller.AuthController.login(..))")
+    @AfterReturning("execution(* com.example.lettuce.api.user.UserCommandController.login(..))")
     public void handleLoginSuccess(JoinPoint joinPoint) {
         RateLimited rateLimited = getRateLimited(joinPoint);
         String key = resolveKey(joinPoint, rateLimited);
         buckets.remove(key);
     }
 
-    @AfterThrowing("execution(* com.example.lettuce.domain.auth.controller.AuthController.login(..))")
+    @AfterThrowing("execution(* com.example.lettuce.api.user.UserCommandController.login(..))")
     public void handleLoginFailure(JoinPoint joinPoint) {
         RateLimited rateLimited = getRateLimited(joinPoint);
         String key = resolveKey(joinPoint, rateLimited);

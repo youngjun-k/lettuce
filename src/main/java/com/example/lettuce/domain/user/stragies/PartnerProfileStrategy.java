@@ -1,25 +1,25 @@
 package com.example.lettuce.domain.user.stragies;
 
-import com.example.lettuce.domain.user.dao.PartnerProfile;
-import com.example.lettuce.domain.user.dao.Profile;
-import com.example.lettuce.domain.user.dto.request.UpdatePartnerProfileRequest;
-import com.example.lettuce.domain.user.dto.request.UpdateUserProfileRequest;
+import com.example.lettuce.domain.user.aggregate.PartnerProfile;
+import com.example.lettuce.domain.user.aggregate.Profile;
+import com.example.lettuce.domain.user.command.dto.UpdatePartnerProfileCommand;
+import com.example.lettuce.domain.user.command.dto.UpdateUserCommand;
 
 public class PartnerProfileStrategy implements ProfileStrategy {
 
     @Override
-    public void validateRequest(UpdateUserProfileRequest<?> request) {
-        if (!(request instanceof UpdatePartnerProfileRequest)) {
+    public void validateRequest(UpdateUserCommand request) {
+        if (!(request instanceof UpdatePartnerProfileCommand)) {
             throw new IllegalArgumentException("Invalid request type for partner profile");
         }
     }
 
     @Override
-    public void updateProfile(Profile profile, UpdateUserProfileRequest<?> request) {
+    public void updateProfile(Profile profile, UpdateUserCommand request) {
 
         validateRequest(request);
 
-        UpdatePartnerProfileRequest partnerRequest = (UpdatePartnerProfileRequest) request;
+        UpdatePartnerProfileCommand partnerRequest = (UpdatePartnerProfileCommand) request;
         PartnerProfile partnerProfile = (PartnerProfile) profile;
         partnerProfile.updateProfile(partnerRequest);
     }

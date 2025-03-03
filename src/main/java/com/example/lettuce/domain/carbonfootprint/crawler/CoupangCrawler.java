@@ -5,7 +5,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
-import com.example.lettuce.domain.carbonfootprint.dto.response.CarbonFootprintProductResponse;
+import com.example.lettuce.api.carbonfootprint.dto.response.CarbonFootprintProductResponse;
 import com.example.lettuce.domain.carbonfootprint.repository.CarbonFootprintProductRepository;
 import com.example.lettuce.global.shared.constant.PromptConstants;
 import com.example.lettuce.global.shared.exception.BaseException;

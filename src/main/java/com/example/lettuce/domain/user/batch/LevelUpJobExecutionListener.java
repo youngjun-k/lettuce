@@ -1,6 +1,6 @@
 package com.example.lettuce.domain.user.batch;
 
-import com.example.lettuce.domain.user.dao.User;
+import com.example.lettuce.domain.user.aggregate.User;
 import com.example.lettuce.domain.user.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.JobExecution;
