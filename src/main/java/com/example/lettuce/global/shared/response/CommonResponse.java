@@ -3,10 +3,10 @@ package com.example.lettuce.global.shared.response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.io.Serializable;
+
 import com.example.lettuce.global.shared.exception.code.ErrorCode;
 import com.example.lettuce.global.shared.exception.code.SuccessCode;
-
-import java.io.Serializable;
 
 public record CommonResponse<T>(
         boolean success,

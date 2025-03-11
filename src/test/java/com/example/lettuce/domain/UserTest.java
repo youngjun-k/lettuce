@@ -2,9 +2,9 @@ package com.example.lettuce.domain;
 
 import org.junit.Test;
 
-import com.example.lettuce.domain.carbonfootprint.dao.CarbonFootPrintReward;
-import com.example.lettuce.domain.user.dao.User;
-import com.example.lettuce.domain.user.enums.UserTier;
+import com.example.lettuce.domain.carbonfootprint.aggregate.RewardHistory;
+import com.example.lettuce.domain.user.aggregate.User;
+import com.example.lettuce.domain.user.aggregate.enums.UserTier;
 
 import java.util.Collections;
 
@@ -16,7 +16,7 @@ public class UserTest {
         public void normal() {
                 // given
                 User user = User.builder()
-                                .rewards(Collections.singletonList(CarbonFootPrintReward.builder()
+                                .rewards(Collections.singletonList(RewardHistory.builder()
                                                 .itemName("item")
                                                 .awardedPoint(1000)
                                                 .build()))
@@ -33,7 +33,7 @@ public class UserTest {
         public void silver() {
                 // given
                 User user = User.builder()
-                                .rewards(Collections.singletonList(CarbonFootPrintReward.builder()
+                                .rewards(Collections.singletonList(RewardHistory.builder()
                                                 .itemName("item")
                                                 .awardedPoint(200_001)
                                                 .build()))
@@ -50,7 +50,7 @@ public class UserTest {
         public void gold() {
                 // given
                 User user = User.builder()
-                                .rewards(Collections.singletonList(CarbonFootPrintReward.builder()
+                                .rewards(Collections.singletonList(RewardHistory.builder()
                                                 .itemName("item")
                                                 .awardedPoint(300_001)
                                                 .build()))
@@ -67,7 +67,7 @@ public class UserTest {
         public void vip() {
                 // given
                 User user = User.builder()
-                                .rewards(Collections.singletonList(CarbonFootPrintReward.builder()
+                                .rewards(Collections.singletonList(RewardHistory.builder()
                                                 .itemName("item")
                                                 .awardedPoint(500_001)
                                                 .build()))

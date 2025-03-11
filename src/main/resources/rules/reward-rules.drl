@@ -1,0 +1,120 @@
+package com.example.lettuce.domain.reward.engine
+
+import com.example.lettuce.domain.reward.engine.fact.RewardCalculationFact
+import com.example.lettuce.domain.reward.engine.result.RewardCalculationResult
+import com.example.lettuce.domain.user.aggregate.enums.UserTier
+import java.math.BigDecimal
+
+/**
+ * Drools rules for calculating rewards based on carbon footprint data.
+ */
+
+// Base rule for all users
+rule "Base Reward Calculation"
+    salience 100
+    when
+        $fact : RewardCalculationFact()
+        $result : RewardCalculationResult()
+    then
+        // Base calculation: 10 points per kg of CO2 reduction
+        int basePoints = $fact.getCarbonReduction().multiply(BigDecimal.valueOf(10)).intValue();
+        $result.setPoints(basePoints);
+        $result.setCarbonSaved($fact.getCarbonReduction());
+        $result.setRewardSource("carbon_reduction");
+        $result.setRewardDescription("Base reward for carbon reduction");
+end
+
+// Tier-based bonus rules
+rule "Silver Tier Bonus"
+    salience 90
+    when
+        $fact : RewardCalculationFact(userTier == UserTier.SILVER)
+        $result : RewardCalculationResult()
+    then
+        // 20% bonus for Silver tier
+        int currentPoints = $result.getPoints();
+        int bonusPoints = (int)(currentPoints * 0.2);
+        $result.setPoints(currentPoints + bonusPoints);
+        $result.setRewardDescription($result.getRewardDescription() + " with Silver tier bonus");
+end
+
+rule "Gold Tier Bonus"
+    salience 90
+    when
+        $fact : RewardCalculationFact(userTier == UserTier.GOLD)
+        $result : RewardCalculationResult()
+    then
+        // 50% bonus for Gold tier
+        int currentPoints = $result.getPoints();
+        int bonusPoints = (int)(currentPoints * 0.5);
+        $result.setPoints(currentPoints + bonusPoints);
+        $result.setRewardDescription($result.getRewardDescription() + " with Gold tier bonus");
+end
+
+rule "VIP Tier Bonus"
+    salience 90
+    when
+        $fact : RewardCalculationFact(userTier == UserTier.VIP)
+        $result : RewardCalculationResult()
+    then
+        // 100% bonus for VIP tier
+        int currentPoints = $result.getPoints();
+        int bonusPoints = currentPoints;
+        $result.setPoints(currentPoints + bonusPoints);
+        $result.setRewardDescription($result.getRewardDescription() + " with VIP tier bonus");
+end
+
+// Category-specific bonus rules
+rule "Food Category Bonus"
+    salience 80
+    when
+        $fact : RewardCalculationFact(productCategory == "FOOD" || productCategory == "GROCERY")
+        $result : RewardCalculationResult()
+    then
+        // 30% bonus for food/grocery items
+        int currentPoints = $result.getPoints();
+        int bonusPoints = (int)(currentPoints * 0.3);
+        $result.setPoints(currentPoints + bonusPoints);
+        $result.setRewardDescription($result.getRewardDescription() + " with Food category bonus");
+end
+
+rule "Transportation Category Bonus"
+    salience 80
+    when
+        $fact : RewardCalculationFact(productCategory == "TRANSPORTATION")
+        $result : RewardCalculationResult()
+    then
+        // 50% bonus for transportation items
+        int currentPoints = $result.getPoints();
+        int bonusPoints = (int)(currentPoints * 0.5);
+        $result.setPoints(currentPoints + bonusPoints);
+        $result.setRewardDescription($result.getRewardDescription() + " with Transportation category bonus");
+end
+
+// New rule for eco-friendly products
+rule "Eco-Friendly Product Bonus"
+    salience 80
+    when
+        $fact : RewardCalculationFact(productCategory == "ECO_FRIENDLY")
+        $result : RewardCalculationResult()
+    then
+        // 40% bonus for eco-friendly products
+        int currentPoints = $result.getPoints();
+        int bonusPoints = (int)(currentPoints * 0.4);
+        $result.setPoints(currentPoints + bonusPoints);
+        $result.setRewardDescription($result.getRewardDescription() + " with Eco-Friendly bonus");
+end
+
+// High impact reduction bonus
+rule "High Impact Reduction Bonus"
+    salience 70
+    when
+        $fact : RewardCalculationFact(carbonReduction.compareTo(BigDecimal.valueOf(5.0)) > 0)
+        $result : RewardCalculationResult()
+    then
+        // 20% bonus for high impact reductions (> 5kg CO2)
+        int currentPoints = $result.getPoints();
+        int bonusPoints = (int)(currentPoints * 0.2);
+        $result.setPoints(currentPoints + bonusPoints);
+        $result.setRewardDescription($result.getRewardDescription() + " with High Impact bonus");
+end 

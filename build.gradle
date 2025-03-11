@@ -1,22 +1,21 @@
 plugins {
-	id 'java'
-	id 'org.springframework.boot' version '3.4.2'
+    id 'java'
+    id 'org.springframework.boot' version '3.4.2'
 	id 'io.spring.dependency-management' version '1.1.7'
+    id 'jacoco'
 }
 
 group = 'com.example'
 version = '0.0.1-SNAPSHOT'
 
 java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(21)
-	}
+    sourceCompatibility = '21'
 }
 
 configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
 }
 
 repositories {
@@ -26,68 +25,137 @@ repositories {
 }
 
 dependencies {
+    // Spring Boot
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'    
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+    
+    // Caching
+    implementation 'org.springframework.boot:spring-boot-starter-cache'
+    implementation 'com.github.ben-manes.caffeine:caffeine:3.2.0'
+    implementation 'org.springframework.data:spring-data-redis'
+    
+    // Database
+    runtimeOnly 'com.mysql:mysql-connector-j'
+    implementation 'org.flywaydb:flyway-core'
+    implementation 'org.flywaydb:flyway-mysql'
 
-	// spring data
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 
-	// spring web
-	implementation 'org.springframework.boot:spring-boot-starter-web'
+    // Hibernate Jcache implementation
+    implementation 'org.hibernate:hibernate-core:6.3.1.Final'
+    implementation 'org.hibernate:hibernate-jcache:6.3.1.Final'    
+    implementation 'org.ehcache:ehcache:3.10.8'
+    
+    // OpenCV
+    implementation 'org.openpnp:opencv:4.7.0-0'    
 
-	// lombok
-	compileOnly 'org.projectlombok:lombok'
-	annotationProcessor 'org.projectlombok:lombok'
-
-	// validation
-	implementation 'org.springframework.boot:spring-boot-starter-validation'
-
-	// mysql
-	runtimeOnly 'com.mysql:mysql-connector-j'
-
-	// mapstruct
-	implementation 'org.mapstruct:mapstruct:1.5.5.Final'
+    // Drools
+    implementation 'org.drools:drools-core:8.44.0.Final'
+    implementation 'org.drools:drools-compiler:8.44.0.Final'
+    implementation 'org.drools:drools-mvel:8.44.0.Final'
+    
+    // LMAX Disruptor
+    implementation 'com.lmax:disruptor:3.4.4'
+    
+    // Hadoop & Parquet
+    implementation 'org.apache.hadoop:hadoop-client:3.3.6'
+    implementation 'org.apache.parquet:parquet-hadoop:1.13.1'
+    implementation 'org.apache.parquet:parquet-avro:1.13.1'
+    
+    // Lombok
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'    
+    
+    // MapStruct
+    implementation 'org.mapstruct:mapstruct:1.5.5.Final'
     annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
 
-	// jwt
-	implementation 'io.jsonwebtoken:jjwt:0.12.5'
-	
-	// spring security
-	implementation 'org.springframework.boot:spring-boot-starter-security'
-	
-	// spring mail
-	implementation 'org.springframework.boot:spring-boot-starter-mail'
-	
-	// bucket4j
-	implementation 'com.bucket4j:bucket4j-core:8.7.0'	
-
-	// json
-	implementation 'com.googlecode.json-simple:json-simple:1.1.1'
-
-	// apache commons
-	implementation 'org.apache.commons:commons-text:1.10.0'
-
-	// redis
-	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-
-	// spring ai
-	implementation platform("org.springframework.ai:spring-ai-bom:1.0.0-SNAPSHOT")
-    implementation 'org.springframework.ai:spring-ai-openai'
-    implementation 'org.springframework.ai:spring-ai-openai-spring-boot-starter'	
-	
-	// aws s3
-	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
-
-	// jsoup
-	implementation 'org.jsoup:jsoup:1.16.1'
-
-	// spring batch
+    // spring batch
 	implementation 'org.springframework.boot:spring-boot-starter-batch'
 	implementation 'org.springframework.batch:spring-batch-integration'
 
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'org.springframework.batch:spring-batch-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    // spring mail
+	implementation 'org.springframework.boot:spring-boot-starter-mail'
+
+    // json
+	implementation 'com.googlecode.json-simple:json-simple:1.1.1'
+
+    // jwt
+	implementation 'io.jsonwebtoken:jjwt:0.12.5'
+	
+    // aws s3
+	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+
+    // jsoup
+	implementation 'org.jsoup:jsoup:1.16.1'
+
+    // bucket4j
+	implementation 'com.bucket4j:bucket4j-core:8.7.0'
+
+    // spring ai
+	implementation platform("org.springframework.ai:spring-ai-bom:1.0.0-SNAPSHOT")
+    implementation 'org.springframework.ai:spring-ai-openai'
+    implementation 'org.springframework.ai:spring-ai-openai-spring-boot-starter'
+
+    // Testing
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+    testImplementation 'org.testcontainers:junit-jupiter'
+    testImplementation 'org.testcontainers:mysql'
+    testImplementation 'org.mockito:mockito-core'
+    testImplementation 'org.assertj:assertj-core'
+    
+    // Development Tools
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
 }
 
 tasks.named('test') {
-	useJUnitPlatform()
+    useJUnitPlatform()
+    finalizedBy jacocoTestReport
 }
+
+jacocoTestReport {
+    dependsOn test
+    reports {
+        xml.required = true
+        html.required = true
+    }
+}
+
+bootJar {
+    archiveFileName = 'lettuce.jar'
+}
+
+// Custom task for database migration
+task migrateDatabase(type: JavaExec) {
+    description = 'Run database migrations'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'org.flywaydb.core.Flyway'
+    args = ['migrate']
+}
+
+// Custom task for Flyway repair
+task repairDatabase(type: org.springframework.boot.gradle.tasks.run.BootRun) {
+    description = 'Repair Flyway schema history table'
+    mainClass = 'com.example.lettuce.LettuceApplication'
+    args = ['--spring.flyway.repair=true']
+}
+
+// Custom task for performance testing
+task performanceTest(type: Test) {
+    description = 'Run performance tests'
+    useJUnitPlatform {
+        includeTags 'performance'
+    }
+}
+
+// Custom task for integration testing
+task integrationTest(type: Test) {
+    description = 'Run integration tests'
+    useJUnitPlatform {
+        includeTags 'integration'
+    }
+} 

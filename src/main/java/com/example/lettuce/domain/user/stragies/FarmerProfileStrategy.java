@@ -1,25 +1,25 @@
 package com.example.lettuce.domain.user.stragies;
 
-import com.example.lettuce.domain.user.dao.FarmerProfile;
-import com.example.lettuce.domain.user.dao.Profile;
-import com.example.lettuce.domain.user.dto.request.UpdateFarmerProfileRequest;
-import com.example.lettuce.domain.user.dto.request.UpdateUserProfileRequest;
+import com.example.lettuce.domain.user.aggregate.FarmerProfile;
+import com.example.lettuce.domain.user.aggregate.Profile;
+import com.example.lettuce.domain.user.command.dto.UpdateFarmerProfileCommand;
+import com.example.lettuce.domain.user.command.dto.UpdateUserCommand;
 
 public class FarmerProfileStrategy implements ProfileStrategy {
 
     @Override
-    public void validateRequest(UpdateUserProfileRequest<?> request) {
-        if (!(request instanceof UpdateFarmerProfileRequest)) {
+    public void validateRequest(UpdateUserCommand request) {
+        if (!(request instanceof UpdateFarmerProfileCommand)) {
             throw new IllegalArgumentException("Invalid request type for farmer profile");
         }
     }
 
     @Override
-    public void updateProfile(Profile profile, UpdateUserProfileRequest<?> request) {
+    public void updateProfile(Profile profile, UpdateUserCommand request) {
 
         validateRequest(request);
 
-        UpdateFarmerProfileRequest farmerRequest = (UpdateFarmerProfileRequest) request;
+        UpdateFarmerProfileCommand farmerRequest = (UpdateFarmerProfileCommand) request;
         FarmerProfile farmerProfile = (FarmerProfile) profile;
         farmerProfile.updateProfile(farmerRequest);
     }

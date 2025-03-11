@@ -1,28 +1,43 @@
 version: "3.8"
 
 services:
+  # MySQL Database
   mysql:
-    image: "mysql:8.0"
+    image: mysql:8.0
     container_name: lettuce-mysql
-    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: lettuce
+      MYSQL_USER: lettuce
+      MYSQL_PASSWORD: lettuce
     ports:
       - "3306:3306"
-    environment:
-      MYSQL_DATABASE: lettuce
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
     volumes:
       - mysql-data:/var/lib/mysql
+      - ./src/main/resources/db/migration:/docker-entrypoint-initdb.d
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
       - main-network
     
+  # Redis for caching
   redis:
-    image: redis:latest
+    image: redis:7.0-alpine
     container_name: lettuce-redis
     ports:
-      - 6379:6379
+      - "6379:6379"
     volumes:
-      - redis-data:/data    
+      - redis-data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
       - main-network
     # command: redis-server --save 60 1 --loglevel warning
@@ -31,6 +46,65 @@ services:
     #   interval: 10s
     #   timeout: 5s
 
+  # MinIO for S3-compatible object storage
+  minio:
+    image: minio/minio
+    container_name: lettuce-minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    volumes:
+      - minio-data:/data
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+
+  # Adminer for database management
+  adminer:
+    image: adminer
+    container_name: lettuce-adminer
+    ports:
+      - "8081:8080"
+    environment:
+      ADMINER_DEFAULT_SERVER: mysql
+    depends_on:
+      - mysql
+
+  # Prometheus for monitoring
+  prometheus:
+    image: prom/prometheus
+    container_name: lettuce-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+
+  # Grafana for visualization
+  grafana:
+    image: grafana/grafana
+    container_name: lettuce-grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    depends_on:
+      - prometheus
+
 networks:
   main-network:
     driver: bridge
@@ -38,3 +112,6 @@ networks:
 volumes:
   mysql-data:
   redis-data:
+  minio-data:
+  prometheus-data:
+  grafana-data:

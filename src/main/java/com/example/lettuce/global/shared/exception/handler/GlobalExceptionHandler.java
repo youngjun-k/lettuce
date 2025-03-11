@@ -1,4 +1,4 @@
-package com.example.lettuce.global.shared.exception.handler;
+package com.example.lettuce.domain.shared.shared.exception.handler;
 
 import com.example.lettuce.global.shared.response.VoidResponse;
 import com.example.lettuce.global.shared.exception.BaseException;

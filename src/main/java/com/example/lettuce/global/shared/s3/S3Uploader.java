@@ -4,6 +4,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+
 import com.example.lettuce.global.shared.exception.BaseException;
 import com.example.lettuce.global.shared.exception.code.ErrorCode;
 

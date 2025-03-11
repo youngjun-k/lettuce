@@ -27,7 +27,7 @@ public class ReentrantEventQueue<T> implements AsyncEventProducer<T>, AsyncEvent
     public ReentrantEventQueue(@Value("${jdbc.async.timeout}") Long timeout,
             @Value("${jdbc.async.bulk-size}") Integer bulkSize) {
         this.timeout = timeout;
-        this.bulkSize = bulkSize;        
+        this.bulkSize = bulkSize;
     }
 
     @Override

@@ -11,14 +11,49 @@ spring:
       - optional:classpath:application-mysql.yml
       - optional:classpath:application-redis.yml
       - optional:classpath:application-cloud.yml
+      - optional:classpath:config/application-disruptor.yml
 
   servlet:
-    multipart:      
+    multipart:
       max-file-size: 10MB
+      max-request-size: 15MB
+      
+  # Async event processing configuration
+  event:
+    async:
+      core-pool-size: 10
+      max-pool-size: 20
+      queue-capacity: 100
+      keep-alive-seconds: 60
+      allow-core-thread-timeout: true
+
+  task:
+    execution:
+      pool:
+        core-size: 8
+        max-size: 16
+        queue-capacity: 100
+        keep-alive: 60s
+      thread-name-prefix: lettuce-task-
+
+  # Jackson serialization configuration
+  jackson:
+    serialization:
+      fail-on-empty-beans: false
+      write-dates-as-timestamps: false
+    deserialization:
+      fail-on-unknown-properties: false
+      accept-single-value-as-array: true
+    default-property-inclusion: "non-null"
 
   ai:
     openai:
       api-key: ${OPENAI_API_KEY}
+      chat:
+        options:
+          model: gpt-4-vision-preview
+          max-tokens: 1000
+          temperature: 0.7
 
   jwt:
     secret: ${JWT_SECRET}
@@ -30,6 +65,15 @@ spring:
     port: ${EMAIL_PORT}
     username: ${EMAIL_USERNAME}
     password: ${EMAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
 
   crawler:
     coupang:
@@ -47,3 +91,83 @@ spring:
         user:
           chunk: 1000
         thread: 10
+
+app:
+  disruptor:
+    buffer-size: 4096
+    worker-threads: 2
+    wait-strategy: blocking
+  storage:
+    parquet:
+      path: /tmp/parquet-data
+
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+  tomcat:
+    max-threads: 200
+    min-spare-threads: 20
+    max-connections: 10000
+    accept-count: 100
+    connection-timeout: 20000
+  compression:
+    enabled: true
+    mime-types: application/json,application/xml,text/html,text/plain
+    min-response-size: 2048
+
+# Management endpoints configuration
+management:
+  endpoints:
+    web:
+      base-path: /actuator
+      exposure:
+        include: health,info,metrics,prometheus,env,scheduledtasks
+  endpoint:
+    health:
+      show-details: when-authorized
+      show-components: when-authorized
+      probes:
+        enabled: true
+  health:
+    defaults:
+      enabled: true
+    db:
+      enabled: true
+    redis:
+      enabled: true
+  metrics:
+    enable:
+      jdbc: true
+      jvm: true
+      logback: true
+      process: true
+      system: true
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+      sla:
+        http.server.requests: 10ms, 50ms, 100ms, 200ms, 500ms, 1s
+      percentiles:
+        http.server.requests: 0.5, 0.9, 0.95, 0.99
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+
+logging:
+  level:
+    root: INFO
+    com.example.lettuce: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    org.springframework.transaction: DEBUG
+    org.flywaydb: DEBUG
+
+# JVM configuration
+# These settings are applied at runtime through the build.gradle file
+# -XX:+UseZGC
+# -XX:MaxGCPauseMillis=10
+# -XX:+ParallelRefProcEnabled
+# -XX:ConcGCThreads=2
+# -XX:ZCollectionInterval=120
