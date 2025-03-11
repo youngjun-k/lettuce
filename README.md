@@ -38,7 +38,7 @@
 <details>  
 <summary>ERD 다이어그램</summary>
   
-![diagram](https://github.com/user-attachments/assets/850cf12d-5e3c-45df-9c36-c821deee2541) 
+![diagram](https://github.com/user-attachments/assets/2336ac15-bf93-4478-b3ca-bfbc422f40ca)
 </details>
 
 <details>  
@@ -73,48 +73,6 @@ sequenceDiagram
     S-->>C: Return CommonResponse with data
     C-->>U: Respond with carbon footprint result
 ```
-
-```mermaid
-sequenceDiagram
-    participant C as Client
-    participant JF as JwtAuthenticationFilter
-    participant JTP as JwtTokenProvider
-    participant UDS as UserDetailsServiceImpl
-
-    C->>JF: HTTP request with JWT token
-    JF->>JF: Extract token and request URI (path)
-    JF->>JTP: getAuthentication(token, path)
-    JTP->>UDS: if path starts with /profile, call loadUserWithProfileByEmail(email)
-    alt Otherwise
-        JTP->>UDS: call loadUserByUsername(email)
-    end
-    UDS-->>JTP: Return UserDetails
-    JTP-->>JF: Return Authentication object
-    JF-->>C: Continue request handling
-```
-
-```mermaid
-sequenceDiagram
-    participant U as User
-    participant PC as ProfileController
-    participant PS as ProfileService
-    participant S3 as S3Service
-    participant DB as Database/Profile
-
-    U->>PC: PUT /profile (multipart: JSON request + optional image)
-    PC->>PS: updateProfile(user, profileRequest, profileImage)
-    PS->>PS: Invoke private updateProfile()
-    alt Profile image provided
-        PS->>S3: Upload profile image
-        S3-->>PS: Return image URL
-        PS->>DB: profile.updateProfileImage(image URL)
-    end
-    PS->>DB: profile.updateBaseProfile(profileRequest)
-    DB-->>PS: Save updated profile
-    PS-->>PC: Return update confirmation
-    PC-->>U: Send response
-```
-
 </details>
 
 ## 3. 기술 선택
