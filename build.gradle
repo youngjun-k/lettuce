@@ -33,10 +33,21 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-actuator'    
 	implementation 'org.springframework.boot:spring-boot-starter-security'
     
+    // Caching
+    implementation 'org.springframework.boot:spring-boot-starter-cache'
+    implementation 'com.github.ben-manes.caffeine:caffeine:3.2.0'
+    implementation 'org.springframework.data:spring-data-redis'
+    
     // Database
     runtimeOnly 'com.mysql:mysql-connector-j'
     implementation 'org.flywaydb:flyway-core'
     implementation 'org.flywaydb:flyway-mysql'
+
+
+    // Hibernate Jcache implementation
+    implementation 'org.hibernate:hibernate-core:6.3.1.Final'
+    implementation 'org.hibernate:hibernate-jcache:6.3.1.Final'    
+    implementation 'org.ehcache:ehcache:3.10.8'
     
     // OpenCV
     implementation 'org.openpnp:opencv:4.7.0-0'    
@@ -124,6 +135,13 @@ task migrateDatabase(type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
     mainClass = 'org.flywaydb.core.Flyway'
     args = ['migrate']
+}
+
+// Custom task for Flyway repair
+task repairDatabase(type: org.springframework.boot.gradle.tasks.run.BootRun) {
+    description = 'Repair Flyway schema history table'
+    mainClass = 'com.example.lettuce.LettuceApplication'
+    args = ['--spring.flyway.repair=true']
 }
 
 // Custom task for performance testing

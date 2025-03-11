@@ -6,8 +6,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import com.example.lettuce.api.carbonfootprint.dto.response.CarbonFootprintProductResponse;
-import com.example.lettuce.domain.carbonfootprint.query.dto.CalculateFootprintByNameQuery;
 import com.example.lettuce.domain.carbonfootprint.query.dto.CalculateFootprintByUrlQuery;
+import com.example.lettuce.domain.carbonfootprint.query.dto.CalculateFootprintByNameQuery;
 import com.example.lettuce.domain.carbonfootprint.query.dto.FindFootprintByUserIdQuery;
 import com.example.lettuce.global.framework.cqrs.QueryBus;
 

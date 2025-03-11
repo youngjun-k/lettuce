@@ -1,4 +1,4 @@
-package com.example.lettuce.global.framework.event.impl;
+package com.example.lettuce.domain.shared.framework.event.impl;
 
 import com.example.lettuce.global.framework.event.DomainEvent;
 import com.example.lettuce.global.framework.event.EventStore;

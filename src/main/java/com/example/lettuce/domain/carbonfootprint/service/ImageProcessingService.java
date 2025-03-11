@@ -35,7 +35,7 @@ public class ImageProcessingService {
      * @return Base64 encoded string of the processed image
      * @throws IOException If there's an error processing the image
      */
-    public String preprocessImage(MultipartFile imageFile) throws IOException {
+    public byte[] preprocessImage(MultipartFile imageFile) throws IOException {
         // Convert MultipartFile to Mat
         byte[] imageBytes = imageFile.getBytes();
         Mat originalImage = bytesToMat(imageBytes);
@@ -98,17 +98,12 @@ public class ImageProcessingService {
     }
     
     /**
-     * Converts an OpenCV Mat to a Base64 encoded string.
+     * Converts an OpenCV Mat to raw image bytes.
      */
-    private String matToBase64(Mat mat) throws IOException {
+    private byte[] matToBase64(Mat mat) throws IOException {
         MatOfByte matOfByte = new MatOfByte();
+        // Use JPEG format instead of PNG for better compatibility with OpenAI API
         Imgcodecs.imencode(".jpg", mat, matOfByte);
-        byte[] byteArray = matOfByte.toArray();
-        
-        BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(byteArray));
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        ImageIO.write(bufferedImage, "jpg", outputStream);
-        
-        return Base64.getEncoder().encodeToString(outputStream.toByteArray());
+        return matOfByte.toArray();
     }
 } 

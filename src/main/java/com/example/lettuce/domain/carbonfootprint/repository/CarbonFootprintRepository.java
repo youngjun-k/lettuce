@@ -49,7 +49,7 @@ public interface CarbonFootprintRepository extends JpaRepository<CarbonFootprint
      * @param end   The end time
      * @return The count of carbon footprints
      */
-    long countByUserAndCalculatedAtBetween(User user, LocalDateTime start, LocalDateTime end);
+    long countByUserAndCreatedAtBetween(User user, LocalDateTime start, LocalDateTime end);
 
     /**
      * Finds all carbon footprints for a user within a time range.
@@ -61,7 +61,7 @@ public interface CarbonFootprintRepository extends JpaRepository<CarbonFootprint
      * @return A page of carbon footprints
      */
     @EntityGraph(attributePaths = { "user" })
-    Page<CarbonFootprint> findByUserAndCalculatedAtBetween(
+    Page<CarbonFootprint> findByUserAndCreatedAtBetween(
             User user, LocalDateTime start, LocalDateTime end, Pageable pageable);
 
     /**
@@ -74,15 +74,14 @@ public interface CarbonFootprintRepository extends JpaRepository<CarbonFootprint
     Optional<Double> calculateTotalCarbonReductionByUserId(@Param("userId") Long userId);
 
     /**
-     * Finds all carbon footprints for a user within a time range.
+     * Finds all carbon footprints within a time range.
      * 
-     * @param user  The user
      * @param start The start time
      * @param end   The end time
      * @return A list of carbon footprints
      */
-    @Query("SELECT cf FROM CarbonFootprint cf WHERE cf.calculatedAt BETWEEN :start AND :end")
-    List<CarbonFootprint> findByCalculatedAtBetween(
+    @Query("SELECT cf FROM CarbonFootprint cf WHERE cf.createdAt BETWEEN :start AND :end")
+    List<CarbonFootprint> findByCreatedAtBetween(
             @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 
     /**
@@ -93,7 +92,7 @@ public interface CarbonFootprintRepository extends JpaRepository<CarbonFootprint
      * @param end    The end time
      * @return A list of carbon footprints
      */
-    @Query("SELECT cf FROM CarbonFootprint cf WHERE cf.user.id = :userId AND cf.calculatedAt BETWEEN :start AND :end")
-    List<CarbonFootprint> findByUserIdAndCalculatedAtBetween(
+    @Query("SELECT cf FROM CarbonFootprint cf WHERE cf.user.id = :userId AND cf.createdAt BETWEEN :start AND :end")
+    List<CarbonFootprint> findByUserIdAndCreatedAtBetween(
             @Param("userId") Long userId, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 }

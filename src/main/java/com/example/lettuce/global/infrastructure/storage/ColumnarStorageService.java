@@ -53,7 +53,7 @@ public class ColumnarStorageService {
             "  required double carbon_value;\n" +
             "  required double carbon_reduction;\n" +
             "  required binary environmental_impact (UTF8);\n" +
-            "  required int64 calculated_at;\n" +
+            "  required int64 created_at;\n" +
             "}";
 
     /**
@@ -66,7 +66,7 @@ public class ColumnarStorageService {
      */
     public String exportCarbonFootprintData(LocalDateTime startDate, LocalDateTime endDate) throws IOException {
         // Get all carbon footprints in the date range
-        List<CarbonFootprint> footprints = carbonFootprintRepository.findByCalculatedAtBetween(startDate, endDate);
+        List<CarbonFootprint> footprints = carbonFootprintRepository.findByCreatedAtBetween(startDate, endDate);
 
         // Create the Parquet schema
         MessageType schema = MessageTypeParser.parseMessageType(CARBON_FOOTPRINT_SCHEMA);
@@ -110,7 +110,7 @@ public class ColumnarStorageService {
                         .append("carbon_value", footprint.getCarbonValue().doubleValue())
                         .append("carbon_reduction", footprint.getCarbonReduction().doubleValue())
                         .append("environmental_impact", footprint.getEnvironmentalImpact())
-                        .append("calculated_at", footprint.getCalculatedAt().toEpochSecond(ZoneOffset.UTC));
+                        .append("created_at", footprint.getCreatedAt().toEpochSecond(ZoneOffset.UTC));
 
                 if (footprint.getImageUrl() != null) {
                     group.append("image_url", footprint.getImageUrl());
@@ -139,7 +139,7 @@ public class ColumnarStorageService {
         // In a real implementation, this would use S3 Select to query Parquet files
         // For this example, we'll use the repository directly
 
-        List<CarbonFootprint> footprints = carbonFootprintRepository.findByUserIdAndCalculatedAtBetween(
+        List<CarbonFootprint> footprints = carbonFootprintRepository.findByUserIdAndCreatedAtBetween(
                 userId, startDate, endDate);
 
         BigDecimal totalCarbonValue = BigDecimal.ZERO;

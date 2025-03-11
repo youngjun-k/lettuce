@@ -7,12 +7,12 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 
 @Getter
-public abstract class UpdateUserRequest  {
+public abstract class UpdateUserRequest {
 
     @NotNull
     private User user;
 
     @ValidNickname
     private String nickname;
-    
+
 }

@@ -9,7 +9,8 @@ import lombok.Getter;
 
 /**
  * Event that is published when a reward is granted to a user.
- * This follows the Event Sourcing pattern for maintaining a log of all reward transactions.
+ * This follows the Event Sourcing pattern for maintaining a log of all reward
+ * transactions.
  */
 @Getter
 public class RewardGrantedEvent implements DomainEvent {
@@ -52,4 +53,4 @@ public class RewardGrantedEvent implements DomainEvent {
     public String getAggregateId() {
         return aggregateId;
     }
-} 
+}

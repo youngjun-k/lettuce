@@ -1,0 +1,22 @@
+app:
+  disruptor:
+    # Buffer size for the Disruptor ring buffer (must be power of 2)
+    buffer-size: 4096
+    # Number of worker threads (less than available cores)
+    worker-threads: 2
+    # Use blocking wait strategy if CPU usage is high
+    wait-strategy: blocking
+
+spring:
+  datasource:
+    hikari:
+      # Increase minimum idle connections to reduce connection contention
+      minimum-idle: 5
+      # Maximum pool size - adjust based on your application needs
+      maximum-pool-size: 10
+      # Tune the connection timeout to avoid long waits
+      connection-timeout: 30000
+      # Enable leak detection to find potential connection leaks
+      leak-detection-threshold: 60000
+      # Set housekeeping period to higher value to reduce frequency
+      housekeeping-period-ms: 60000 

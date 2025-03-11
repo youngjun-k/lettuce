@@ -39,7 +39,7 @@ public class EligibleForRewardSpec implements Specification<CarbonFootprint> {
         LocalDateTime startOfDay = LocalDateTime.now().truncatedTo(ChronoUnit.DAYS);
         LocalDateTime endOfDay = startOfDay.plusDays(1);
         
-        long rewardsToday = carbonFootprintRepository.countByUserAndCalculatedAtBetween(
+        long rewardsToday = carbonFootprintRepository.countByUserAndCreatedAtBetween(
                 user, startOfDay, endOfDay);
         
         return rewardsToday < MAX_REWARDS_PER_DAY;

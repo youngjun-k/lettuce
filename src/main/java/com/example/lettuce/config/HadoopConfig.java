@@ -1,4 +1,4 @@
-package com.example.lettuce.global.config;
+package com.example.lettuce.config;
 
 import org.apache.hadoop.conf.Configuration;
 import org.springframework.beans.factory.annotation.Value;

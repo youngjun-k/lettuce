@@ -1,8 +1,6 @@
 
 package com.example.lettuce.global.shared.constant;
 
-import java.time.Duration;
-
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

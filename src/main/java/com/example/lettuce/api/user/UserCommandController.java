@@ -27,6 +27,8 @@ import com.example.lettuce.domain.user.aggregate.User;
 import com.example.lettuce.domain.user.command.UserCommandService;
 import com.example.lettuce.domain.user.command.dto.ResetPasswordCommand;
 import com.example.lettuce.domain.user.command.dto.VerifyEmailCommand;
+import com.example.lettuce.global.framework.ratelimit.annotation.RateLimitType;
+import com.example.lettuce.global.framework.ratelimit.annotation.RateLimited;
 import com.example.lettuce.global.framework.security.annotation.LoginUser;
 import com.example.lettuce.global.shared.exception.code.SuccessCode;
 import com.example.lettuce.global.shared.response.CommonResponse;
@@ -43,6 +45,7 @@ public class UserCommandController {
 
     private final UserCommandService commandService;
 
+    @RateLimited(key = "#p0.email", type = RateLimitType.EMAIL)
     @PostMapping("/login")
     public ResponseEntity<CommonResponse<AuthResponse>> login(@Valid @RequestBody LoginRequest request) {
         return CommonResponse.success(SuccessCode.SUCCESS, commandService.login(request.toCommand()));
@@ -54,7 +57,7 @@ public class UserCommandController {
         return CommonResponse.success(SuccessCode.SUCCESS_INSERT);
     }
 
-@PostMapping("/farmer")
+    @PostMapping("/farmer")
     public ResponseEntity<CommonResponse<VoidResponse>> createFarmer(@Valid @RequestBody CreateFarmerRequest request) {
         commandService.registerUser(request.toCommand());
         return CommonResponse.success(SuccessCode.SUCCESS_INSERT);

@@ -1,7 +1,8 @@
 package com.example.lettuce.api.user.dto.request;
 
-import com.example.lettuce.domain.user.command.dto.DeleteAccountCommand;
+
 import com.example.lettuce.domain.user.aggregate.User;
+import com.example.lettuce.domain.user.command.dto.DeleteAccountCommand;
 import jakarta.validation.constraints.NotBlank;
 
 public record DeleteAccountRequest(

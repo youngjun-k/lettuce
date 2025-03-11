@@ -19,7 +19,7 @@ import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
-public class LoginCoomandHandler implements CommandHandler<LoginCommand, AuthResponse> {
+public class LoginComandHandler implements CommandHandler<LoginCommand, AuthResponse> {
 
     private final UserQueryService userQueryService;
     private final UserMapper userMapper;

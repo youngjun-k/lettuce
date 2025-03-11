@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 
 import com.example.lettuce.domain.user.aggregate.User;
 import com.example.lettuce.global.shared.entity.BaseTime;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -38,6 +39,7 @@ public class RewardHistory extends BaseTime {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnore
     private User user;
 
     @Column(name = "image_url", nullable = true, length = 255, columnDefinition = "VARCHAR(255) COMMENT '이미지 URL'")

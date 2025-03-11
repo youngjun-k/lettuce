@@ -5,13 +5,14 @@ import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.openai.OpenAiChatModel;
 import org.springframework.ai.openai.OpenAiChatOptions;
 import org.springframework.ai.openai.api.OpenAiApi.ChatModel;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.ai.model.Media;
 import org.springframework.util.MimeTypeUtils;
-import org.springframework.web.multipart.MultipartFile;
+import java.util.List;
 
 import com.example.lettuce.global.shared.exception.BaseException;
 import com.example.lettuce.global.shared.exception.code.ErrorCode;
@@ -32,14 +33,19 @@ public class OpenAiService {
     /**
      * Calculate Carbon Footprint by Image
      * 
-     * @param image
+     * @param prompt     the text prompt to send to OpenAI
+     * @param imageBytes the raw image bytes
      * @return String (Carbon Footprint)
      * @throws BaseException if OpenAI API call fails or image is not valid
      */
-    public String visionChat(String prompt, MultipartFile image) {
+    public String visionChat(String prompt, byte[] imageBytes) {
         try {
-            UserMessage userMessage = new UserMessage(prompt,
-                    new Media(MimeTypeUtils.IMAGE_PNG, image.getResource()));
+            // Create a ByteArrayResource with the raw image bytes
+            ByteArrayResource imageResource = new ByteArrayResource(imageBytes);
+
+            // Create a media object with the JPEG MIME type
+            Media media = new Media(MimeTypeUtils.IMAGE_JPEG, imageResource);
+            UserMessage userMessage = new UserMessage(prompt, List.of(media));
 
             return chatModel.call(new Prompt(userMessage, CHAT_OPTIONS)).getResult().getOutput().getText().trim();
         } catch (Exception e) {
@@ -51,7 +57,7 @@ public class OpenAiService {
     /**
      * Calculate Carbon Footprint by Text
      * 
-     * @param prompt
+     * @param prompt the text prompt to send to OpenAI
      * @return String (Carbon Footprint)
      * @throws BaseException if OpenAI API call fails or prompt is not valid
      */

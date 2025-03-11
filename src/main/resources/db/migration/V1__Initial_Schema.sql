@@ -23,12 +23,11 @@ CREATE TABLE IF NOT EXISTS carbon_footprints (
     carbon_value DECIMAL(10, 2) NOT NULL,
     carbon_reduction DECIMAL(10, 2) NOT NULL,
     environmental_impact VARCHAR(1000) NOT NULL,
-    calculated_at TIMESTAMP NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     version BIGINT NOT NULL DEFAULT 0,
     FOREIGN KEY (user_id) REFERENCES users(id),
-    INDEX idx_carbon_footprints_user_id_calculated_at (user_id, calculated_at)
+    INDEX idx_carbon_footprints_user_id_created_at (user_id, created_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Reward Wallets Table

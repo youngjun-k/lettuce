@@ -1,6 +1,5 @@
 package com.example.lettuce.domain.reward.specification;
 
-import java.math.BigDecimal;
 import java.util.Optional;
 
 import org.springframework.stereotype.Component;

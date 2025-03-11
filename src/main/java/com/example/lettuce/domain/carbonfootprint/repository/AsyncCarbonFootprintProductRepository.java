@@ -86,7 +86,7 @@ public class AsyncCarbonFootprintProductRepository {
             });
         } catch (Exception e) {
             log.error("Error saving carbon footprint products: {}", e.getMessage());
-            throw new BaseException(ErrorCode.INTERNAL_SERVER_ERROR);
+            throw new BaseException(ErrorCode.INTERNAL_SERVER_ERROR);         
         }
 
     }

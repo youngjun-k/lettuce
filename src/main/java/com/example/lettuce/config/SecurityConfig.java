@@ -1,4 +1,4 @@
-package com.example.lettuce.global.config;
+package com.example.lettuce.config;
 
 import java.util.List;
 

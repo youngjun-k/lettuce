@@ -1,14 +1,13 @@
 package com.example.lettuce.domain.carbonfootprint.aggregate;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 import com.example.lettuce.domain.carbonfootprint.event.FootprintCalculatedEvent;
 import com.example.lettuce.domain.user.aggregate.User;
-import com.example.lettuce.global.framework.event.DomainEvent;
 import com.example.lettuce.global.framework.event.DomainEventPublisher;
 import com.example.lettuce.global.shared.entity.BaseTime;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -29,8 +28,7 @@ import lombok.NoArgsConstructor;
 
 /**
  * CarbonFootprint is an Aggregate Root that represents a carbon footprint
- * calculation
- * for a specific user and product.
+ * calculation for a specific user and product.
  */
 @Getter
 @Entity
@@ -38,7 +36,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "carbon_footprints", indexes = {
-                @Index(name = "idx_carbon_footprints_user_id_calculated_at", columnList = "user_id, calculated_at")
+                @Index(name = "idx_carbon_footprints_user_id_created_at", columnList = "user_id, created_at")
 })
 public class CarbonFootprint extends BaseTime {
 
@@ -51,9 +49,10 @@ public class CarbonFootprint extends BaseTime {
 
         @ManyToOne(fetch = FetchType.LAZY)
         @JoinColumn(name = "user_id", nullable = false)
+        @JsonIgnore
         private User user;
 
-        @Column(name = "image_url", nullable = true, length = 255)
+        @Column(name = "image_url", length = 255)
         private String imageUrl;
 
         @Column(name = "product_name", nullable = false, length = 255)
@@ -70,9 +69,6 @@ public class CarbonFootprint extends BaseTime {
 
         @Column(name = "environmental_impact", nullable = false, length = 1000)
         private String environmentalImpact;
-
-        @Column(name = "calculated_at", nullable = false)
-        private LocalDateTime calculatedAt;
 
         @Version
         private Long version;
@@ -99,20 +95,9 @@ public class CarbonFootprint extends BaseTime {
                                 .carbonValue(carbonValue)
                                 .carbonReduction(carbonReduction)
                                 .environmentalImpact(environmentalImpact)
-                                .calculatedAt(LocalDateTime.now())
                                 .build();
 
-                // Publish domain event
-                DomainEvent event = new FootprintCalculatedEvent(
-                                footprint.getAggregateId(),
-                                user.getId().toString(),
-                                carbonValue,
-                                carbonReduction,
-                                productCategory,
-                                LocalDateTime.now());
-
-                eventPublisher.publish(event);
-
+                publishFootprintCalculatedEvent(footprint, eventPublisher);
                 return footprint;
         }
 
@@ -128,17 +113,17 @@ public class CarbonFootprint extends BaseTime {
                 this.carbonValue = carbonValue;
                 this.carbonReduction = carbonReduction;
                 this.environmentalImpact = environmentalImpact;
-                this.calculatedAt = LocalDateTime.now();
 
-                // Publish domain event
-                DomainEvent event = new FootprintCalculatedEvent(
-                                this.getAggregateId(),
-                                this.user.getId().toString(),
-                                carbonValue,
-                                carbonReduction,
-                                this.productCategory,
-                                LocalDateTime.now());
+                publishFootprintCalculatedEvent(this, eventPublisher);
+        }
 
-                eventPublisher.publish(event);
+        /**
+         * Publishes a FootprintCalculatedEvent for the given footprint.
+         */
+        private static void publishFootprintCalculatedEvent(CarbonFootprint footprint,
+                        DomainEventPublisher eventPublisher) {
+                if (eventPublisher != null) {
+                        eventPublisher.publish(new FootprintCalculatedEvent(footprint));
+                }
         }
 }

@@ -91,6 +91,20 @@ rule "Transportation Category Bonus"
         $result.setRewardDescription($result.getRewardDescription() + " with Transportation category bonus");
 end
 
+// New rule for eco-friendly products
+rule "Eco-Friendly Product Bonus"
+    salience 80
+    when
+        $fact : RewardCalculationFact(productCategory == "ECO_FRIENDLY")
+        $result : RewardCalculationResult()
+    then
+        // 40% bonus for eco-friendly products
+        int currentPoints = $result.getPoints();
+        int bonusPoints = (int)(currentPoints * 0.4);
+        $result.setPoints(currentPoints + bonusPoints);
+        $result.setRewardDescription($result.getRewardDescription() + " with Eco-Friendly bonus");
+end
+
 // High impact reduction bonus
 rule "High Impact Reduction Bonus"
     salience 70

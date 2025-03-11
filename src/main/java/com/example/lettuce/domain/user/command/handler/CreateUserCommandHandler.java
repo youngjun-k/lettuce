@@ -37,8 +37,9 @@ public class CreateUserCommandHandler implements CommandHandler<CreateClientComm
                 .getProfileMapper(command.getRole());
 
         final Profile profile = profileMapper.toProfile(command, user);
+
         user.setProfile(profile);
-        profile.setUser(user);
+
         userRepository.save(user);
 
         eventPublisher.publish(new UserRegistrationEvent(command.getEmail()));

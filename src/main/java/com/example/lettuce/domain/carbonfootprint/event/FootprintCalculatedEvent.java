@@ -1,55 +1,40 @@
 package com.example.lettuce.domain.carbonfootprint.event;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
+import org.springframework.context.ApplicationEvent;
+
+import com.example.lettuce.domain.carbonfootprint.aggregate.CarbonFootprint;
 import com.example.lettuce.global.framework.event.DomainEvent;
 
 import lombok.Getter;
 
 /**
  * Event that is published when a carbon footprint is calculated.
- * This follows the Event Sourcing pattern for maintaining a log of all calculations.
+ * This follows the Event Sourcing pattern for maintaining a log of all
+ * calculations.
  */
 @Getter
-public class FootprintCalculatedEvent implements DomainEvent {
-    private final String eventId;
-    private final String aggregateId;
-    private final String userId;
-    private final BigDecimal carbonValue;
-    private final BigDecimal carbonReduction;
-    private final String productCategory;
-    private final LocalDateTime occurredOn;
+public class FootprintCalculatedEvent extends ApplicationEvent implements DomainEvent {
+    private final CarbonFootprint carbonFootprint;
 
-    public FootprintCalculatedEvent(
-            String aggregateId,
-            String userId,
-            BigDecimal carbonValue,
-            BigDecimal carbonReduction,
-            String productCategory,
-            LocalDateTime occurredOn) {
-        this.eventId = UUID.randomUUID().toString();
-        this.aggregateId = aggregateId;
-        this.userId = userId;
-        this.carbonValue = carbonValue;
-        this.carbonReduction = carbonReduction;
-        this.productCategory = productCategory;
-        this.occurredOn = occurredOn;
+    public FootprintCalculatedEvent(CarbonFootprint carbonFootprint) {
+        super(carbonFootprint);
+        this.carbonFootprint = carbonFootprint;
     }
 
     @Override
     public String getEventId() {
-        return eventId;
-    }
-
-    @Override
-    public LocalDateTime getOccurredOn() {
-        return occurredOn;
+        return carbonFootprint.getAggregateId();
     }
 
     @Override
     public String getAggregateId() {
-        return aggregateId;
+        return carbonFootprint.getAggregateId();
     }
-} 
+
+    @Override
+    public LocalDateTime getOccurredOn() {
+        return LocalDateTime.now();
+    }
+}

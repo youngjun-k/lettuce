@@ -28,7 +28,7 @@ public class FarmerProfile extends Profile implements ProfileUpdatable<UpdateFar
     private String farmerDescription;
 
     @Override
-    public void updateProfile(UpdateFarmerProfileCommand profileCommand) {        
+    public void updateProfile(UpdateFarmerProfileCommand profileCommand) {
         super.updateBaseProfile(profileCommand);
         this.farmerLicenseNumber = profileCommand.getFarmerLicenseNumber();
         this.farmerDescription = profileCommand.getFarmerDescription();

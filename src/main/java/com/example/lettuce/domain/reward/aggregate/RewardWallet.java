@@ -10,6 +10,7 @@ import com.example.lettuce.domain.reward.event.RewardGrantedEvent;
 import com.example.lettuce.domain.user.aggregate.User;
 import com.example.lettuce.global.framework.event.DomainEventPublisher;
 import com.example.lettuce.global.shared.entity.BaseTime;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -63,6 +64,7 @@ public class RewardWallet extends BaseTime {
 
     @Builder.Default
     @OneToMany(mappedBy = "wallet", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<RewardTransaction> transactions = new ArrayList<>();
 
     @Version
@@ -83,23 +85,66 @@ public class RewardWallet extends BaseTime {
     /**
      * Adds points to the wallet and records a transaction.
      */
-    public void addPoints(int points, BigDecimal carbonSaved, String source, String description, DomainEventPublisher eventPublisher) {
+    public void addPoints(int points, BigDecimal carbonSaved, String source, String description,
+            DomainEventPublisher eventPublisher) {
+        if (points <= 0 || carbonSaved == null) {
+            return;
+        }
+
         this.totalPoints += points;
         this.totalCarbonSaved = this.totalCarbonSaved.add(carbonSaved);
-        
-        RewardTransaction transaction = RewardTransaction.builder()
+
+        RewardTransaction transaction = createTransaction(points, carbonSaved, source, description,
+                TransactionType.CREDIT);
+        this.transactions.add(transaction);
+
+        publishRewardGrantedEvent(points, carbonSaved, source, eventPublisher);
+    }
+
+    /**
+     * Uses points from the wallet and records a transaction.
+     * 
+     * @return true if points were successfully used, false if insufficient points
+     */
+    public boolean usePoints(int points, String purpose, String description, DomainEventPublisher eventPublisher) {
+        if (points <= 0 || this.totalPoints < points) {
+            return false;
+        }
+
+        this.totalPoints -= points;
+
+        RewardTransaction transaction = createTransaction(points, BigDecimal.ZERO, purpose, description,
+                TransactionType.DEBIT);
+        this.transactions.add(transaction);
+
+        return true;
+    }
+
+    /**
+     * Creates a transaction with the given parameters.
+     */
+    private RewardTransaction createTransaction(int points, BigDecimal carbonSaved, String source, String description,
+            TransactionType type) {
+        return RewardTransaction.builder()
                 .wallet(this)
                 .points(points)
                 .carbonSaved(carbonSaved)
                 .source(source)
                 .description(description)
-                .transactionType(TransactionType.CREDIT)
+                .transactionType(type)
                 .transactionDate(LocalDateTime.now())
                 .build();
-        
-        this.transactions.add(transaction);
-        
-        // Publish domain event
+    }
+
+    /**
+     * Publishes a reward granted event.
+     */
+    private void publishRewardGrantedEvent(int points, BigDecimal carbonSaved, String source,
+            DomainEventPublisher eventPublisher) {
+        if (eventPublisher == null) {
+            return;
+        }
+
         RewardGrantedEvent event = new RewardGrantedEvent(
                 UUID.randomUUID().toString(),
                 this.aggregateId,
@@ -107,34 +152,8 @@ public class RewardWallet extends BaseTime {
                 points,
                 carbonSaved,
                 source,
-                LocalDateTime.now()
-        );
-        
+                LocalDateTime.now());
+
         eventPublisher.publish(event);
     }
-
-    /**
-     * Uses points from the wallet and records a transaction.
-     */
-    public boolean usePoints(int points, String purpose, String description, DomainEventPublisher eventPublisher) {
-        if (this.totalPoints < points) {
-            return false;
-        }
-        
-        this.totalPoints -= points;
-        
-        RewardTransaction transaction = RewardTransaction.builder()
-                .wallet(this)
-                .points(points)
-                .carbonSaved(BigDecimal.ZERO)
-                .source(purpose)
-                .description(description)
-                .transactionType(TransactionType.DEBIT)
-                .transactionDate(LocalDateTime.now())
-                .build();
-        
-        this.transactions.add(transaction);
-        
-        return true;
-    }
-} 
+}
