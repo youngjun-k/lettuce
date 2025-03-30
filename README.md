@@ -1,4 +1,4 @@
-![Screenshot 2025-02-19 at 18 50 35](https://github.com/user-attachments/assets/9148b0b7-e414-4e86-92f9-71503ebeb5b3)
+![Lettuce Project Logo](https://github.com/user-attachments/assets/9148b0b7-e414-4e86-92f9-71503ebeb5b3)
 
 ## 1. 프로젝트 선정 배경 및 목표
 
@@ -6,7 +6,7 @@
 
 프로젝트는 유저의 친환경 소비 형태를 분석하여 탄소 배출량을 측정한다음 보상으로 포인트를 지급하여 유저는 지급 받은 포인트로 농부들로 부터 surpluse food를 구매할수 있는 플랫폼을 구현하였습니다.
 
-![Screenshot 2025-02-19 at 18 51 24](https://github.com/user-attachments/assets/560e9638-7275-48f2-bf9f-6b8b8dd764f2)
+![Lettuce Business Model](https://github.com/user-attachments/assets/560e9638-7275-48f2-bf9f-6b8b8dd764f2)
 그떄 당시 개발을 저 혼자 맡아 진행하였는데 24시간이라는 시간 제약 조건속에서 발표 전까지는 백엔드와 프론트를 모두 담을수 없다고 판단하여 flutter를 활용하여 외부 api를 연동해 모바일 어플리케이션 개발만 진행을 완료하였습니다.
 
 해카톤은 끝났지만 그떄 만든 프로젝트의 아쉬움이 남은 저는 이 프로젝트를 백엔드 영역에서 완성하고자 합니다.
@@ -21,7 +21,7 @@
 
 ### 3-Layer DDD with Clean Architecture
 
-![CleanArchitecture-2](https://github.com/user-attachments/assets/159b4d65-6310-463c-9b78-4c3342c458d0)
+![Clean Architecture](https://github.com/user-attachments/assets/159b4d65-6310-463c-9b78-4c3342c458d0)
 
 도메인 레이어 전략
 
@@ -38,7 +38,7 @@
 <details>  
 <summary>ERD 다이어그램</summary>
   
-![diagram](https://github.com/user-attachments/assets/850cf12d-5e3c-45df-9c36-c821deee2541) 
+![diagram](https://github.com/user-attachments/assets/2336ac15-bf93-4478-b3ca-bfbc422f40ca)
 </details>
 
 <details>  
@@ -72,47 +72,6 @@ sequenceDiagram
     L-->>S3: Return upload info
     S-->>C: Return CommonResponse with data
     C-->>U: Respond with carbon footprint result
-```
-
-```mermaid
-sequenceDiagram
-    participant C as Client
-    participant JF as JwtAuthenticationFilter
-    participant JTP as JwtTokenProvider
-    participant UDS as UserDetailsServiceImpl
-
-    C->>JF: HTTP request with JWT token
-    JF->>JF: Extract token and request URI (path)
-    JF->>JTP: getAuthentication(token, path)
-    JTP->>UDS: if path starts with /profile, call loadUserWithProfileByEmail(email)
-    alt Otherwise
-        JTP->>UDS: call loadUserByUsername(email)
-    end
-    UDS-->>JTP: Return UserDetails
-    JTP-->>JF: Return Authentication object
-    JF-->>C: Continue request handling
-```
-
-```mermaid
-sequenceDiagram
-    participant U as User
-    participant PC as ProfileController
-    participant PS as ProfileService
-    participant S3 as S3Service
-    participant DB as Database/Profile
-
-    U->>PC: PUT /profile (multipart: JSON request + optional image)
-    PC->>PS: updateProfile(user, profileRequest, profileImage)
-    PS->>PS: Invoke private updateProfile()
-    alt Profile image provided
-        PS->>S3: Upload profile image
-        S3-->>PS: Return image URL
-        PS->>DB: profile.updateProfileImage(image URL)
-    end
-    PS->>DB: profile.updateBaseProfile(profileRequest)
-    DB-->>PS: Save updated profile
-    PS-->>PC: Return update confirmation
-    PC-->>U: Send response
 ```
 
 </details>
@@ -160,8 +119,14 @@ Node.js 기반의 Lambda 테스트 환경을 만들었고, 인스턴스 400개�
 **최적화 기법**
 
 1. Lock-Free 큐 디자인: Disruptor Pattern 도입 → 초당 150,000 이벤트 처리
-2. Columnar Storage: Apache Parquet + S3 Select → 대용량 데이터 분석 70% 가속화
+2. Columnar Storage: Apache Parquet + AWS Athena(2024년 10월부터 생성된 bucket은 S3 Select를 더이상 지원하지 않음) → 대용량 데이터 분석 70% 가속화
 3. JVM 튜닝: G1GC → ZGC 전환, -XX:MaxGCPauseMillis =10 설정
+4. 비동기 처리 최적화: 다중 큐 분산 및 리더-워커 패턴 도입
+5. 데이터베이스 커넥션 풀 부족 문제 해결: 동적 스레드 풀 크기 산출 및 Bulk Insert 최적화
+6. 분산 환경에서의 이벤트 순차성 보장: Kafka 파티셔닝 전략 + Lamport Clock 적용
+7. 배치 프로세스 최적화: Multi-Dimensional Parallelism 적용
+8. 데이터 Sharding: B+Tree 인덱스 활용한 파티셔닝 (ID 범위 기반 8-way 분할)
+
 
 ## 5. 트러블슈팅 심화 분석
 
@@ -386,7 +351,7 @@ LIMIT 500 FOR UPDATE SKIP LOCKED; -- 페이징 잠금 회피
 
 | Metric    | Before | After | Delta |
 | --------- | ------ | ----- | ----- |
-| 처리 시간 | 30m    | 5m    | ▼83%  |
+| 처리 시간  | 30m    | 5m    | ▼83%  |
 | CPU Usage | 12%    | 78%   | ▲650% |
 | GC Pause  | 14/min | 2/min | ▼86%  |
 | DB Load   | 1.8    | 0.4   | ▼78%  |
@@ -409,7 +374,7 @@ LIMIT 500 FOR UPDATE SKIP LOCKED; -- 페이징 잠금 회피
 - 주기적 파티션 병합 (COPY 방식)
 - 핫/콜드 데이터 계층화 (S3 Intelligent Tiering)
 
-### 4. API 엔드포인트 Rate Limiting 이슈
+### 5. API 엔드포인트 Rate Limiting 이슈
 
 문제 상황
 

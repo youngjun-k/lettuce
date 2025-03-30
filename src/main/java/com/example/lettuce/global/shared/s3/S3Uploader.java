@@ -15,6 +15,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.nio.file.Paths;
 import java.time.LocalDate;
@@ -33,6 +35,9 @@ public class S3Uploader {
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
+
+    @Value("${cloud.aws.cloudfront.url}")
+    private String cloudFrontUrl;
 
     public UploadImageInfo uploadMultipartFileToBucket(String category, MultipartFile file) {
         validateImageContentType(file.getContentType());
@@ -61,6 +66,14 @@ public class S3Uploader {
         }
     }
 
+    public void uploadParquetFileToS3(String category, String filename, File file) {
+        try (var inputStream = new FileInputStream(file)) {
+            uploadToS3(buildFilePath(category, filename), inputStream, null);
+        } catch (Exception e) {
+            logAndThrowError(category, filename, e);
+        }
+    }
+
     private ObjectMetadata createMetadata(String contentType, long contentLength) {
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentType(contentType);
@@ -73,7 +86,7 @@ public class S3Uploader {
             PutObjectRequest request = new PutObjectRequest(bucket, filePath, inputStream, metadata)
                     .withCannedAcl(CannedAccessControlList.PublicRead);
             amazonS3.putObject(request);
-            return new UploadImageInfo(getUrlFromBucket(filePath));
+            return new UploadImageInfo(getCloudFrontUrl(filePath));
         } catch (Exception e) {
             logAndThrowError(filePath, "unknown", e);
             return null; // Never reached due to exception
@@ -100,14 +113,8 @@ public class S3Uploader {
         return UUID.randomUUID().toString().replace("-", "").substring(0, UUID_PREFIX_LENGTH);
     }
 
-    private String getUrlFromBucket(String fileKey) {
-        try {
-            return amazonS3.getUrl(bucket, fileKey).toString();
-        } catch (Exception e) {
-            log.error("S3 URL 생성 실패. bucket: {}, fileKey: {}, error: {}",
-                    bucket, fileKey, e.getMessage(), e);
-            throw new BaseException(ErrorCode.S3_UPLOADER_ERROR);
-        }
+    private String getCloudFrontUrl(String fileKey) {
+        return cloudFrontUrl + "/" + fileKey;
     }
 
     private void logAndThrowError(String category, String fileName, Exception e) {

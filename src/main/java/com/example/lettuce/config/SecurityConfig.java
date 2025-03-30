@@ -15,7 +15,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.example.lettuce.global.framework.security.filter.JwtAuthenticationFilter;
 import com.example.lettuce.global.framework.security.filter.JwtExceptionFilter;
-import com.example.lettuce.global.framework.security.filter.RateLimitFilter;
 import com.example.lettuce.global.shared.exception.handler.AccessDenialHandlerImpl;
 import com.example.lettuce.global.shared.exception.handler.AuthenticationEntryPointImpl;
 
@@ -36,7 +35,6 @@ public class SecurityConfig {
 
         private final AccessDenialHandlerImpl accessDenialHandler;
         private final AuthenticationEntryPointImpl authenticationEntryPoint;
-        private final RateLimitFilter rateLimitFilter;
         private final JwtAuthenticationFilter jwtAuthenticationFilter;
         private final JwtExceptionFilter jwtExceptionFilter;
 
@@ -49,6 +47,7 @@ public class SecurityConfig {
                         "/email/send/verify-email",
                         "/email/send/reset-password",
                         "/carbon-footprint/**",
+                        "/api/carbon-footprint/**",
         };
 
         private static final String[] ALLOW_ORIGINS = {
@@ -78,7 +77,6 @@ public class SecurityConfig {
                                 .authorizeHttpRequests(authorize -> authorize
                                                 .requestMatchers(PERMIT_PATHS).permitAll()
                                                 .anyRequest().authenticated())
-                                .addFilterBefore(rateLimitFilter, UsernamePasswordAuthenticationFilter.class)
                                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                                 .addFilterBefore(jwtExceptionFilter, JwtAuthenticationFilter.class)
                                 .exceptionHandling(exception -> exception
