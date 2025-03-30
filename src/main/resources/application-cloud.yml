@@ -7,3 +7,10 @@ cloud:
       static: ${AWS_REGION}
     s3:
       bucket: ${S3_BUCKET_NAME}
+    cloudfront:
+      url: ${CLOUD_FRONT_URL}
+    # Athena configuration (replacement for S3 Select which is being discontinued)
+    athena:
+      database: lettuce_analytics
+      output-location: s3://${S3_BUCKET_NAME}/athena-results/
+      query-timeout-ms: 30000

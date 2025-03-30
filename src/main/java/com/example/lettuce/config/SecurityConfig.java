@@ -47,6 +47,7 @@ public class SecurityConfig {
                         "/email/send/verify-email",
                         "/email/send/reset-password",
                         "/carbon-footprint/**",
+                        "/api/carbon-footprint/**",
         };
 
         private static final String[] ALLOW_ORIGINS = {

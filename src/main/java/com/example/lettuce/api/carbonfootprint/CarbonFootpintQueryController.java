@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.hibernate.validator.constraints.URL;
@@ -20,19 +21,23 @@ import com.example.lettuce.domain.carbonfootprint.query.dto.CalculateFootprintBy
 import com.example.lettuce.domain.carbonfootprint.query.dto.FindFootprintByUserIdQuery;
 import com.example.lettuce.domain.user.aggregate.User;
 import com.example.lettuce.global.framework.security.annotation.LoginUser;
+import com.example.lettuce.global.infrastructure.storage.CarbonFootprintAnalytics;
+import com.example.lettuce.global.infrastructure.storage.ColumnarStorageService;
 import com.example.lettuce.global.shared.exception.code.SuccessCode;
 import com.example.lettuce.global.shared.response.CommonResponse;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/carbon-footprint")
+@RequestMapping("/carbon-footprint")
 public class CarbonFootpintQueryController {
 
         private final CarbonFootprintQueryService queryService;
+        private final ColumnarStorageService columnarStorageService;
 
         @GetMapping
         public ResponseEntity<CommonResponse<CarbonFootprintProductResponse>> calculateFootprintByUrl(
@@ -57,7 +62,16 @@ public class CarbonFootpintQueryController {
         public ResponseEntity<CommonResponse<List<CarbonFootprintProductResponse>>> findFootprintByUserId(
                         @LoginUser User user) {
                 return CommonResponse.success(SuccessCode.SUCCESS,
-                                queryService.findFootprintByUserId(new FindFootprintByUserIdQuery(user)));
+                        queryService.findFootprintByUserId(new FindFootprintByUserIdQuery(user)));
+        }
+
+        @GetMapping(value = "/analyze")
+        public ResponseEntity<CommonResponse<List<CarbonFootprintAnalytics>>> getParquetFileFromS3(
+                        @RequestParam(name = "startDate", required = true) @Valid LocalDateTime startDate,
+                        @RequestParam(name = "endDate", required = true) @Valid LocalDateTime endDate,
+                        @LoginUser User user) {
+                return CommonResponse.success(SuccessCode.SUCCESS,
+                                columnarStorageService.analyzeCarbonFootprint(user.getId(), startDate, endDate));
         }
 
 }
