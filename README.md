@@ -241,32 +241,7 @@ private static int calculatePoolSize(JdbcTemplate jdbcTemplate) {
 
 ---
 
-### 3. 분산 환경에서의 이벤트 순차성 보장 문제
-
-문제: 멀티 AZ 환경에서 이벤트 처리 순서 불일치 발생
-해결: Kafka 파티셔닝 전략 + Lamport Clock 적용
-
-```java
-// Lamport Clock 구현 예시
-class LamportClock {
-    private long clock;
-
-    public LamportClock() {
-        this.clock = 0;
-    }
-
-    public long increment() {
-        this.clock++;
-        return this.clock;
-    }
-
-    public void update(long received_time) {
-        this.clock = Math.max(this.clock, received_time) + 1;
-    }
-}
-```
-
-### 4. 배치 프로세스 최적화
+### 3. 배치 프로세스 최적화
 
 🔎 문제 상황
 
@@ -374,7 +349,7 @@ LIMIT 500 FOR UPDATE SKIP LOCKED; -- 페이징 잠금 회피
 - 주기적 파티션 병합 (COPY 방식)
 - 핫/콜드 데이터 계층화 (S3 Intelligent Tiering)
 
-### 5. API 엔드포인트 Rate Limiting 이슈
+### 4. API 엔드포인트 Rate Limiting 이슈
 
 문제 상황
 
