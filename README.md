@@ -331,23 +331,6 @@ LIMIT 500 FOR UPDATE SKIP LOCKED; -- 페이징 잠금 회피
 | GC Pause  | 14/min | 2/min | ▼86%  |
 | DB Load   | 1.8    | 0.4   | ▼78%  |
 
-### 🚀 확장 전략
-
-1. Lambda Architecture 적용
-
-- Speed Layer: Flink Streaming (실시간 보상 계산)
-- Batch Layer: Spark ETL (일간 정산) → 40GB 처리 22분($6.8)
-- Serving Layer: Druid (다차원 분석)
-
-2. ShardingSphere 도입
-
-- 자동 샤딩 정책 (Hash + Range)
-- 엘라스틱 스케일 아웃 지원
-
-3. Compaction 전략
-
-- 주기적 파티션 병합 (COPY 방식)
-- 핫/콜드 데이터 계층화 (S3 Intelligent Tiering)
 
 ### 4. API 엔드포인트 Rate Limiting 이슈
 
